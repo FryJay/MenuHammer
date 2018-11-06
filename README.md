@@ -26,6 +26,6 @@ It is still very much a work in progress.  I have a large list of features I sti
 
 ## Screenshots
 
-![basic-main-menu](https://github.com/FryJay/MenuHammer/blob/master/screenshots/MenuHammer-basic-menu.png)
-![basic-app-menu](https://github.com/FryJay/MenuHammer/blob/master/screenshots/MenuHammer-app-menu.png)
+![basic-main-menu](https://raw.githubusercontent.com/FryJay/MenuHammer/master/screenshots/MenuHammer-basic-main-menu.png)
+![basic-app-menu](https://raw.githubusercontent.com/FryJay/MenuHammer/master/screenshots/MenuHammer-basic-app-menu.png)
 
