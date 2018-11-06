@@ -1,7 +1,9 @@
 # MenuHammer
 A Spacemacs inspired menu system for macOS built for Hammerspoon.  
 
-It allows for user configured menus with menu items that can perform a series of actions when selected.  
+It displays user configured menus on the bottom of the screen.  Each menu has series of menu items that can 
+perform a series of actions when activated by the configured hotkey.
+
 Those actions include:
 
 - Loading other menus
@@ -12,7 +14,8 @@ Those actions include:
 - Open files (not really implemented yet, only opens files in Emacs)
 - Execute a provided lua function
 
-It has some default menus configured but you will most certainly want to customize it.
+It has some default menus configured but you will most certainly want to customize it.  Out of the box it will
+bind ⌘-⌥-⌃-q to enable/disable MenuHammer and ⌥-space to show/hide MenuHammer.
 
 It is still very much a work in progress.  I have a large list of features I still want to add and some 
 features are only partially implemented.  Use at your own risk.
