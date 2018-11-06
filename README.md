@@ -21,8 +21,11 @@ It is still very much a work in progress.  I have a large list of features I sti
 2. Clone the repository and place MenuHammer.spoon in ~/.hammerspoon/Spoons
 
 3. Add these two lines to your init.lua to load the menu when Hammerspoon starts:
+
+```lua
 menuHammer = hs.loadSpoon("MenuHammer")
 menuHammer.rootMenu:enter()
+```
 
 3. For customizing menu layouts, create a file called menuHammerCustomConfig.lua in ~/.hammerspoon.
 
