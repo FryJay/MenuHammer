@@ -38,7 +38,7 @@ For customizing menus, colors and other values, create a file called menuHammerC
 ~/.hammerspoon and customize to your liking.  Look at MenuHammer.spoon/MenuConfigDefaults.lua for what can
 be customized.
 
-## Customizing
+## Example Configuration
 
 Here is an example of a basic menu configuration that covers some of the things MenuHammer can do:
 
@@ -85,7 +85,7 @@ Here is an example of a basic menu configuration that covers some of the things 
 The above will configure two menus, the Main Menu which can be loaded with the hotkey "alt-space" and 
 the Application Menu which it not bound to a hotkey but is accessible by pressing "A" in the main menu.
 
-### Menus
+## Customizing Menus
 
 Menus are defined in the menuHammerMenuList table.  Each menu can have the following values:
 
@@ -107,7 +107,7 @@ menu is unreachable.
     }
 ```
 
-### Menu Items
+## Customizing Menu Items
 
 Menu items are defined in the menuItems table for each menu.  The values sent to them are:
 
@@ -119,7 +119,7 @@ If no modifiers are required, enter a blank string or nil.
 - Description - The text to display to the user for this menu item.
 - Actions - A table of actions (outlined below) to perform when this menu item is activated.
 
-#### Categories
+### Categories
 
 Menu items have a category that are mostly used for display purposes.  The only category that performs an
 action by default is the "exit" menu item which will always close MenuHammer.  The category selected 
@@ -127,7 +127,7 @@ will determine what default colors are applied and what symbol is displayed as a
 will only need to use "menu" and "action".  You can use the mhConstants.category table to refer to 
 specific categories.  E.g. mhConstants.category.menu.
 
-##### Menu - mhConstants.category.menu 
+#### Menu - mhConstants.category.menu 
 
 This category is used when the menu item is for loading another menu.
 
@@ -139,7 +139,7 @@ For example, this menu item will load the Applications menu:
     }},
 ```
 
-##### Action - mhConstants.category.action
+#### Action - mhConstants.category.action
 
 This category is used when the menu item performs one or more actions.  MenuHammer closes when actions are 
 performed.  MenuHammer will close the open menu when an action is performed.  
@@ -152,23 +152,23 @@ For example, this menu item will launch the Terminal application:
     }},
 ```
 
-##### Exit - mhConstants.category.exit 
+#### Exit - mhConstants.category.exit 
 
 Used for menu items that close MenuHammer.  There is an exit action defined by default on all menus that is 
 bound to escape.
 
-##### Back - mhConstants.category.back 
+#### Back - mhConstants.category.back 
 
 Used for "back buttons" to go to the menu set as the parent menu to the current menu.  There a back action 
 defined by default on all menus that is bound to delete.  This category still requires that a "menu" action
 be defined though this should be made automatic in the future.
 
-##### Navigation - mhConstants.category.navigation
+#### Navigation - mhConstants.category.navigation
 
 A general category used for any nagivation item that isn't "exit" or "back".  No menu items are defined by 
 default with this category.
 
-#### Actions
+### Actions
 
 There are several types of actions that can be performed by menu items.  Each menu item can perform a list of
 actions.  You can use the mhConstant.action table to refer to specific actions.  E.g. mhConstants.action.menu
@@ -177,7 +177,7 @@ to load a menu.
 Each action is defined as a table with an action type and a series of other values that are dependent on the
 action type.
 
-##### Menu - mhConstants.action.menu
+#### Menu - mhConstants.action.menu
 
 This action loads the menu with the provided identifier. 
 
@@ -192,7 +192,7 @@ will cause an error.
     }},
 ```
 
-##### Launcher - mhConstants.action.launcher
+#### Launcher - mhConstants.action.launcher
 
 This action launches the application with the matching name.  Note that the name of the application must match
 exactly to the name of the app.  For example,  you must use "Google Chrome" instead of "Chrome".
@@ -208,7 +208,7 @@ Arguments:
     }},
 ```
 
-##### Keycombo - mhConstants.action.keycombo
+#### Keycombo - mhConstants.action.keycombo
 
 This action will execute the provided key combination.
 
@@ -251,7 +251,7 @@ Here is an example of the "sleep" modifier:
     }},
 ```
 
-##### Func - mhConstants.action.func
+#### Func - mhConstants.action.func
 
 This action will execute the provided function so it can be used to run other HammerSpoon or lua functionality.
 
@@ -265,7 +265,7 @@ Arguments:
     }},
 ```
 
-##### Script - mhConstants.action.script
+#### Script - mhConstants.action.script
 
 This action will execute the provided shell script.
 
@@ -281,7 +281,7 @@ This option currently does not work and will result in an error.
     }},
 ```
 
-##### Shellcommand - mhConstants.action.shellcommand
+#### Shellcommand - mhConstants.action.shellcommand
 
 This action will execute the provided shell command.  It does not currently allow for running it with admin
 privileges but it is a feature I plan to add.
@@ -296,13 +296,13 @@ Arguments:
     }},
 ```
 
-##### Resolution - mhConstants.action.resolution
+#### Resolution - mhConstants.action.resolution
 
 This action accepts a resolution mode (defined in hs.screen - https://www.hammerspoon.org/docs/hs.screen.html) 
 that will be used to set the resolution of the screen when activated.  By default, MenuHammer includes a
 resolution menu that lists all available resolutions.
 
-##### Mediakey - mhConstants.action.mediakey
+#### Mediakey - mhConstants.action.mediakey
 
 I intend to remove this action entirely.  It can currently perform various media commands (play/pause, next,
 etc.) but it would make more sense to use function actions instead.
