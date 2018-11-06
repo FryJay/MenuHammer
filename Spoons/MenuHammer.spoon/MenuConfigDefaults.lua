@@ -6,6 +6,8 @@
 -- However, the Hammerspoon dock icon will also be disabled (required for fullscreen).
 menuShowInFullscreen = true
 
+showMenuBarItem = false
+
 -- The number of seconds that a hotkey alert will stay on screen.
 -- 0 = alerts are disabled.
 hs.hotkey.alertDuration = 0
