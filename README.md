@@ -1,7 +1,7 @@
 # MenuHammer
 A Spacemacs inspired menu system for macOS built for Hammerspoon.  
 
-It allows for user configured menus that can perform a series of actions when selected.  Those actions include:
+It allows for user configured menus with menu items that can perform a series of actions when selected.  Those actions include:
 - Loading other menus
 - Opening applications
 - Executing key combinations
@@ -19,6 +19,10 @@ It is still very much a work in progress.  I have a large list of features I sti
 1. Install [Hammerspoon](http://www.hammerspoon.org/).
 
 2. Clone the repository and place MenuHammer.spoon in ~/.hammerspoon/Spoons
+
+3. Add these two lines to your init.lua to load the menu when Hammerspoon starts:
+menuHammer = hs.loadSpoon("MenuHammer")
+menuHammer.rootMenu:enter()
 
 3. For customizing menu layouts, create a file called menuHammerCustomConfig.lua in ~/.hammerspoon.
 
