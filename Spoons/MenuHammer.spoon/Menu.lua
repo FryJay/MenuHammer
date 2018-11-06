@@ -515,43 +515,43 @@ function Menu:getActionFunction(desc, command)
 
     local returnCommand = nil
 
-    if commandType == mhConstants.bind.menu then
+    if commandType == mhConstants.action.menu then
         -- Add a menu
         local menu = command[2]
         assert(menu, "Sub menu is nil for " .. self.name .. " " .. desc)
         returnCommand = function() self.hammer:switchMenu(menu, true) end
-    elseif commandType == mhConstants.bind.launcher then
+    elseif commandType == mhConstants.action.launcher then
         -- Launch an application.
         local appIdentifier = command[2]
         local closeMenu = command[3]
         returnCommand = function() self:launchApplication(desc, appIdentifier, closeMenu) end
-    elseif commandType == mhConstants.bind.keycombo then
+    elseif commandType == mhConstants.action.keycombo then
         local commandModifiers = command[2]
         local commandKey = command[3]
         returnCommand = function() self:runKeyCommand(commandModifiers, commandKey) end
-    elseif commandType == mhConstants.bind.resolution then
+    elseif commandType == mhConstants.action.resolution then
         local resolutionMode = command[2]
         returnCommand = function() self:changeResolution(resolutionMode) end
-    elseif commandType == mhConstants.bind.mediakey then
+    elseif commandType == mhConstants.action.mediakey then
         local action = command[2]
         local quantity = command[3]
         returnCommand = function() self:runMediaCommand(action, quantity) end
-    elseif commandType == mhConstants.bind.func then
+    elseif commandType == mhConstants.action.func then
         local bindFunction = command[2]
         returnCommand = bindFunction
-    elseif commandType == mhConstants.bind.resizer then
+    elseif commandType == mhConstants.action.resizer then
         local action = command[2]
         returnCommand = function() self:runResizer(action) end
-    elseif commandType == mhConstants.bind.script then
+    elseif commandType == mhConstants.action.script then
         local scriptName = command[2]
         local useAdmin = command[3]
         returnCommand = function() self:runScript(scriptName, useAdmin) end
-    elseif commandType == mhConstants.bind.openfile then
+    elseif commandType == mhConstants.action.openfile then
         local fileName = command[2]
         assert(fileName, "FileName for " .. desc .. " is nil")
         assert(type(fileName) == "string", "File name provided is of type: " .. type(fileName))
         returnCommand = function() self:openEditor(fileName) end
-    elseif commandType == mhConstants.bind.shellcommand then
+    elseif commandType == mhConstants.action.shellcommand then
         local shellCommand = command[2]
         assert(shellCommand, "Shell command for " .. desc .. " is nil")
         returnCommand = function() self:runShellCommand(shellCommand) end

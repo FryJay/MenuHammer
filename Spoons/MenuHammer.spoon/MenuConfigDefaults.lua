@@ -152,21 +152,21 @@ else
             menuHotkey = {{'alt'}, 'space'},
             menuItems =  {
                 {mhConstants.category.menu, '', 'A', 'Applications', {
-                     {mhConstants.bind.menu, applicationMenu}
+                     {mhConstants.action.menu, applicationMenu}
                 }},
                 {mhConstants.category.menu, '', 'F', 'Finder',
-                 {{mhConstants.bind.menu, finderMenu}}},
+                 {{mhConstants.action.menu, finderMenu}}},
                 {mhConstants.category.menu, '', 'H', 'Hammerspoon',
-                 {{mhConstants.bind.menu, hammerspoonMenu}}},
+                 {{mhConstants.action.menu, hammerspoonMenu}}},
                 {mhConstants.category.menu, '', 'M', 'Media Controls',
-                 {{mhConstants.bind.menu, mediaMenu}}},
+                 {{mhConstants.action.menu, mediaMenu}}},
                 {mhConstants.category.action, '', 'S', "Spotlight", {
-                     {mhConstants.bind.keycombo, {'cmd'}, 'space'}
+                     {mhConstants.action.keycombo, {'cmd'}, 'space'}
                 }},
                 {mhConstants.category.menu, '', 'R', 'Resolution',
-                 {{mhConstants.bind.menu, resolutionMenu}}},
+                 {{mhConstants.action.menu, resolutionMenu}}},
                 {mhConstants.category.menu, '', 'X', 'System Commands',
-                 {{mhConstants.bind.menu, systemMenu}}},
+                 {{mhConstants.action.menu, systemMenu}}},
             }
         },
         applicationMenu = {
@@ -174,25 +174,25 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'A', "App Store", {
-                     {mhConstants.bind.launcher, 'App Store'}
+                     {mhConstants.action.launcher, 'App Store'}
                 }},
                 {mhConstants.category.action, '', 'F', "Finder", {
-                     {mhConstants.bind.launcher, 'Finder'}
+                     {mhConstants.action.launcher, 'Finder'}
                 }},
                 {mhConstants.category.action, '', 'S', "Safari", {
-                     {mhConstants.bind.launcher, 'Safari'}
+                     {mhConstants.action.launcher, 'Safari'}
                 }},
                 {mhConstants.category.action, '', 'T', "Terminal", {
-                     {mhConstants.bind.launcher, 'Terminal'}
+                     {mhConstants.action.launcher, 'Terminal'}
                 }},
                 {mhConstants.category.action, 'shift', 'T', "TextEdit", {
-                     {mhConstants.bind.launcher, 'Terminal'}
+                     {mhConstants.action.launcher, 'Terminal'}
                 }},
                 {mhConstants.category.menu, '', 'U', 'Utilities', {
-                     {mhConstants.bind.menu, utilitiesMenu}
+                     {mhConstants.action.menu, utilitiesMenu}
                 }},
                 {mhConstants.category.action, '', 'X', "Xcode", {
-                     {mhConstants.bind.launcher, 'Xcode'}
+                     {mhConstants.action.launcher, 'Xcode'}
                 }},
             }
         },
@@ -201,25 +201,25 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'A', "Activity Monitor", {
-                     {mhConstants.bind.launcher, 'Activity Monitor'}
+                     {mhConstants.action.launcher, 'Activity Monitor'}
                 }},
                 {mhConstants.category.action, 'shift', 'A', "Airport Utility", {
-                     {mhConstants.bind.launcher, 'Airport Utility'}
+                     {mhConstants.action.launcher, 'Airport Utility'}
                 }},
                 {mhConstants.category.action, '', 'C', "Console", {
-                     {mhConstants.bind.launcher, 'Console'}
+                     {mhConstants.action.launcher, 'Console'}
                 }},
                 {mhConstants.category.action, '', 'D', "Disk Utility", {
-                     {mhConstants.bind.launcher, 'Disk Utility'}
+                     {mhConstants.action.launcher, 'Disk Utility'}
                 }},
                 {mhConstants.category.action, '', 'K', "Keychain Access", {
-                     {mhConstants.bind.launcher, 'Keychain Access'}
+                     {mhConstants.action.launcher, 'Keychain Access'}
                 }},
                 {mhConstants.category.action, '', 'S', "System Information", {
-                     {mhConstants.bind.launcher, 'System Information'}
+                     {mhConstants.action.launcher, 'System Information'}
                 }},
                 {mhConstants.category.action, '', 'T', "Terminal", {
-                     {mhConstants.bind.launcher, 'Terminal'}
+                     {mhConstants.action.launcher, 'Terminal'}
                 }},
             }
         },
@@ -228,68 +228,68 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'A', 'Applications Folder', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'a'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'a'},
                 }},
                 {mhConstants.category.action, 'shift', 'A', 'Airdrop', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'r'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'r'},
                 }},
                 {mhConstants.category.action, '', 'C', 'Computer', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'c'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'c'},
                 }},
                 {mhConstants.category.action, '', 'D', 'Desktop', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'd'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'd'},
                 }},
                 {mhConstants.category.action, 'shift', 'D', 'Downloads', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'alt'}, 'l'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'alt'}, 'l'},
                 }},
                 {mhConstants.category.action, '', 'F', "Finder", {
-                     {mhConstants.bind.launcher, 'Finder'}
+                     {mhConstants.action.launcher, 'Finder'}
                 }},
                 {mhConstants.category.action, '', 'G', 'Go to Folder...', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'g'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'g'},
                 }},
                 {mhConstants.category.action, '', 'H', 'Home', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'h'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'h'},
                 }},
                 {mhConstants.category.action, 'shift', 'H', 'Hammerspoon', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'g'},
-                     {mhConstants.bind.keycombo, {'type'}, '~/.hammerspoon\n'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'g'},
+                     {mhConstants.action.keycombo, {'type'}, '~/.hammerspoon\n'},
                 }},
                 {mhConstants.category.action, '', 'I', 'iCloud Drive', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'i'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'i'},
                 }},
                 {mhConstants.category.action, '', 'K', 'Connect to Server...', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd'}, 'K'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd'}, 'K'},
                 }},
                 {mhConstants.category.action, '', 'L', 'Library', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'l'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'l'},
                 }},
                 {mhConstants.category.action, '', 'N', 'Network', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'k'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'k'},
                 }},
                 {mhConstants.category.action, '', 'O', 'Documents', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'o'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'o'},
                 }},
                 {mhConstants.category.action, '', 'R', 'Recent', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'f'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'f'},
                 }},
                 {mhConstants.category.action, '', 'U', 'Utilities', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'u'},
+                     {mhConstants.action.launcher, 'Finder'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'u'},
                 }},
             }
         },
@@ -298,20 +298,20 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'C', "Hammerspoon Console", {
-                     {mhConstants.bind.func, function() hs.toggleConsole() end }
+                     {mhConstants.action.func, function() hs.toggleConsole() end }
                 }},
                 {mhConstants.category.action, '', 'H', "Hammerspoon Manual", {
-                     {mhConstants.bind.func, function()
+                     {mhConstants.action.func, function()
                           hs.doc.hsdocs.forceExternalBrowser(true)
                           hs.doc.hsdocs.moduleEntitiesInSidebar(true)
                           hs.doc.hsdocs.help()
                      end }
                 }},
                 {mhConstants.category.action, '', 'R', "Reload Hammerspoon", {
-                     {mhConstants.bind.func, function() hs.reload() end }
+                     {mhConstants.action.func, function() hs.reload() end }
                 }},
                 {mhConstants.category.action, '', 'Q', "Quit Hammerspoon", {
-                     {mhConstants.bind.func, function() os.exit() end }
+                     {mhConstants.action.func, function() os.exit() end }
                 }},
             }
         },
@@ -320,31 +320,31 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'A', "iTunes", {
-                     {mhConstants.bind.launcher, "iTunes"}
+                     {mhConstants.action.launcher, "iTunes"}
                 }},
                 {mhConstants.category.action, '', 'H', "Previous Track", {
-                     {mhConstants.bind.mediakey, "previous"}
+                     {mhConstants.action.mediakey, "previous"}
                 }},
                 {mhConstants.category.action, '', 'J', "Volume Down", {
-                     {mhConstants.bind.mediakey, "volume", -10}
+                     {mhConstants.action.mediakey, "volume", -10}
                 }},
                 {mhConstants.category.action, '', 'K', "Volume Up", {
-                     {mhConstants.bind.mediakey, "volume", 10}
+                     {mhConstants.action.mediakey, "volume", 10}
                 }},
                 {mhConstants.category.action, '', 'L', "Next Track", {
-                     {mhConstants.bind.mediakey, "next"}
+                     {mhConstants.action.mediakey, "next"}
                 }},
                 {mhConstants.category.action, '', 'X', "Mute/Unmute", {
-                     {mhConstants.bind.mediakey, "mute"}
+                     {mhConstants.action.mediakey, "mute"}
                 }},
                 {mhConstants.category.action, '', 'S', "Play/Pause", {
-                     {mhConstants.bind.mediakey, "mute"}
+                     {mhConstants.action.mediakey, "mute"}
                 }},
                 {mhConstants.category.action, '', 'I', "Brightness Down", {
-                     {mhConstants.bind.mediakey, "brightness", -10}
+                     {mhConstants.action.mediakey, "brightness", -10}
                 }},
                 {mhConstants.category.action, '', 'O', "Brightness Up", {
-                     {mhConstants.bind.mediakey, "brightness", 10}
+                     {mhConstants.action.mediakey, "brightness", 10}
                 }},
             }
         },
@@ -358,34 +358,34 @@ else
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, 'shift', 'F', "Force Quit Frontmost App", {
-                     {mhConstants.bind.func, function() hs.application.frontmostApplication():kill9() end }
+                     {mhConstants.action.func, function() hs.application.frontmostApplication():kill9() end }
                 }},
                 {mhConstants.category.action, '', 'L', "Lock Screen", {
-                     {mhConstants.bind.func, function() hs.caffeinate.systemSleep() end }
+                     {mhConstants.action.func, function() hs.caffeinate.systemSleep() end }
                 }},
                 {mhConstants.category.action, 'shift', 'R', "Restart System", {
-                     {mhConstants.bind.func, function() hs.caffeinate.restartSystem() end }
+                     {mhConstants.action.func, function() hs.caffeinate.restartSystem() end }
                 }},
                 {mhConstants.category.action, 'cmd', 'R', "Shutdown System", {
-                     {mhConstants.bind.func, function() hs.caffeinate.shutdownSystem() end }
+                     {mhConstants.action.func, function() hs.caffeinate.shutdownSystem() end }
                 }},
                 {mhConstants.category.action, '', 'S', "Start Screensaver", {
-                     {mhConstants.bind.func, function() hs.caffeinate.startScreensaver() end }
+                     {mhConstants.action.func, function() hs.caffeinate.startScreensaver() end }
                 }},
                 {mhConstants.category.action, 'shift', 'Q', 'Logout', {
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'Q'},
+                     {mhConstants.action.keycombo, {'cmd', 'shift'}, 'Q'},
                 }},
                 {mhConstants.category.action, 'cmd', 'Q', 'Logout Immediately', {
-                     {mhConstants.bind.keycombo, {'cmd', 'alt', 'shift'}, 'Q'},
+                     {mhConstants.action.keycombo, {'cmd', 'alt', 'shift'}, 'Q'},
                 }},
                 {mhConstants.category.action, '', 'U', "Change User", {
-                     {mhConstants.bind.func, function() hs.caffeinate.lockScreen() end }
+                     {mhConstants.action.func, function() hs.caffeinate.lockScreen() end }
                 }},
                 {mhConstants.category.action, '', 'V', 'Activity Monitor', {
-                     {mhConstants.bind.launcher, 'Activity Monitor'},
+                     {mhConstants.action.launcher, 'Activity Monitor'},
                 }},
                 {mhConstants.category.action, '', 'X', 'System Preferences', {
-                     {mhConstants.bind.launcher, 'System Preferences'},
+                     {mhConstants.action.launcher, 'System Preferences'},
                 }},
             }
         },
