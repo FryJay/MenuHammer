@@ -67,11 +67,13 @@ else
     hs.dockicon.show()
 end
 
--- The menu bar item to show current status
-menuBarItem = hs.menubar.new()
+if showMenuBarItem then
+    -- The menu bar item to show current status
+    menuBarItem = hs.menubar.new()
 
--- Make it so that clicking on the menu bar item results in a reload of Hammerspoon
-menuBarItem:setClickCallback(function() hs.reload() end)
+    -- Make it so that clicking on the menu bar item results in a reload of Hammerspoon
+    menuBarItem:setClickCallback(function() hs.reload() end)
+end
 
 ----------------------------------------------------------------------------------------------------
 ---------------------------------------- Menuhammer Init -------------------------------------------
@@ -462,18 +464,20 @@ end
 -- Set the menu bar text
 function menuHammer:menuBarText(text)
 
-    local newText = text
-    local backgroundColor = {hex = menuItemColors.menuBarActive.background, alpha = 0.95}
-    local textColor = {hex = menuItemColors.menuBarActive.text, alpha = 0.95}
+    if showMenuBarItem then
+        local newText = text
+        local backgroundColor = {hex = menuItemColors.menuBarActive.background, alpha = 0.95}
+        local textColor = {hex = menuItemColors.menuBarActive.text, alpha = 0.95}
 
-    if text == nil then
-        newText = "idle"
-        backgroundColor = {hex = menuItemColors.menuBarIdle.background, alpha = 0.95}
-        textColor = {hex = menuItemColors.menuBarIdle.text, alpha = 0.95}
+        if text == nil then
+            newText = "idle"
+            backgroundColor = {hex = menuItemColors.menuBarIdle.background, alpha = 0.95}
+            textColor = {hex = menuItemColors.menuBarIdle.text, alpha = 0.95}
+        end
+
+        menuBarItem:setTitle(hs.styledtext.new(newText, {color = textColor,
+                                                        backgroundColor = backgroundColor}))
     end
-
-    menuBarItem:setTitle(hs.styledtext.new(newText, {color = textColor,
-                                                     backgroundColor = backgroundColor}))
 end
 
 ----------------------------------------------------------------------------------------------------

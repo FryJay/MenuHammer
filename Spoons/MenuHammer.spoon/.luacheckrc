@@ -10,6 +10,7 @@ globals = {
 
     -- General config
     "menuShowInFullscreen",
+    "showMenuBarItem",
     "menuTextEditor",
     "askpassLocation",
 
