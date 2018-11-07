@@ -52,24 +52,24 @@ Here is an example of a basic menu configuration that covers some of the things 
             menuHotkey = {{'alt'}, 'space'},
             menuItems =  {
                 {mhConstants.category.menu, '', 'A', 'Applications', {
-                     {mhConstants.bind.menu, "applicationMenu""}
+                      {mhConstants.action.menu, "applicationMenu"}
                 }},
                 {mhConstants.category.action, '', 'T', "Terminal", {
-                     {mhConstants.bind.launcher, 'Terminal'}
+                      {mhConstants.action.launcher, 'Terminal'}
                 }},
                 {mhConstants.category.action, '', 'D', 'Desktop', {
-                     {mhConstants.bind.launcher, 'Finder'},
-                     {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'd'},
+                      {mhConstants.action.launcher, 'Finder'},
+                      {mhConstants.action.keycombo, {'cmd', 'shift'}, 'd'},
                 }},
                 {mhConstants.category.action, '', 'H', "Hammerspoon Manual", {
-                     {mhConstants.bind.func, function()
+                      {mhConstants.action.func, function()
                           hs.doc.hsdocs.forceExternalBrowser(true)
                           hs.doc.hsdocs.moduleEntitiesInSidebar(true)
                           hs.doc.hsdocs.help()
-                     end }
+                      end }
                 }},
                 {mhConstants.category.action, '', 'X', "Mute/Unmute", {
-                     {mhConstants.bind.mediakey, "mute"}
+                      {mhConstants.action.mediakey, "mute"}
                 }},
             }
         },
@@ -78,7 +78,7 @@ Here is an example of a basic menu configuration that covers some of the things 
             menuHotkey = nil,
             menuItems = {
                 {mhConstants.category.action, '', 'A', "App Store", {
-                     {mhConstants.bind.launcher, 'App Store'}
+                      {mhConstants.action.launcher, 'App Store'}
                 }},
             }
         },
