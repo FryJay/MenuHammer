@@ -36,7 +36,6 @@ cons = readOnlyTable {
         system = 'system',              -- Execute a system command
         sleep = 'sleep',                -- Pause execution (sleep)
         resolution = 'resolution',      -- Change the screen resolution
-        resizer = 'resizer',            -- Resize the screen
         mediakey = 'mediakey',          -- Execute a media key button
     },
     sys = {
@@ -49,36 +48,6 @@ cons = readOnlyTable {
         switchuser = 'switchuser',      -- Switch user
         screensaver = 'screensaver',    -- Start screensaver
     },
-    resizer = {
-        left = 'left',
-        right = 'right',
-        up = 'up',
-        down = 'down',
-        halfLeft = 'halfleft',
-        halfRight = 'halfright',
-        halfUp = 'halfup',
-        halfDown = 'halfdown',
-        northWest = 'cornerNW',
-        northEast = 'cornerNE',
-        southWest = 'cornerSW',
-        southEast = 'cornerSE',
-        fullScreen = 'fullscreen',
-        centerWindow = 'center_window',
-        stepLeft = 'step_left',
-        stepRight = 'step_right',
-        stepUp = 'step_up',
-        stepDown = 'step_down',
-        expand = 'expand',
-        shrink = 'shrink',
-        screenLeft = 'screen_left',
-        screenRight = 'screen_right',
-        screenUp = 'screen_up',
-        screenDown = 'screen_down',
-        screenNext = 'screen_next',
-        undo = 'undo',
-        redo = 'redo',
-        centerCursor = 'center_cursor'
-    }
 }
 
 ----------------------------------------------------------------------------------------------------
