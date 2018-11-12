@@ -178,7 +178,7 @@ else
         ------------------------------------------------------------------------------------------------
         mainMenu = {
             parentMenu = nil,
-            menuHotkey = {{'cmd'}, 'space'},
+            menuHotkey = {{'alt'}, 'space'},
             menuItems = {
                 {cons.cat.submenu, 'shift', '/', 'Help', {
                     {cons.act.menu, helpMenu}
@@ -206,9 +206,6 @@ else
                 }},
                 {cons.cat.submenu, '', 'S', 'System Preferences', {
                     {cons.act.menu, systemMenu}
-                }},
-                {cons.cat.action, '', '\'', "iTerm", {
-                    {cons.act.launcher, 'iTerm'}
                 }},
                 {cons.cat.action, '', 'space', "Spotlight", {
                     {cons.act.keycombo, {'cmd'}, 'space'}
