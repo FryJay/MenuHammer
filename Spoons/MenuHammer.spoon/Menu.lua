@@ -6,8 +6,6 @@
 local Menu = {}
 Menu.__index = Menu
 
-Menu.hammer = menuHammer
-
 -- Internal function used to find our location, so we know where to load files from
 local function scriptPath()
     local str = debug.getinfo(2, "S").source:sub(2)
@@ -67,7 +65,7 @@ function Menu:keys()
 end
 
 ----------------------------------------------------------------------------------------------------
------------------------------------------ Build Menu - ---------------------------------------------
+----------------------------------------- Build Menu -----------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
@@ -152,17 +150,23 @@ function Menu:createMenuItems()
         local key = menuItem[3]
         local desc = menuItem[4]
 
-        -- Get the commands to run
+        -- Get the commands to execute
         local commands = menuItem[5]
 
         local commandFunctions = {}
 
         -- Loop through the commands
         for _, command in ipairs(commands) do
+            -- If the command is to load a menu, ensure the menu exists.
+            if command[1] == cons.act.menu then
+                assert(command[2], self.name .. " has nil submenu identifier")
+                assert(self.hammer.menuItemDefinitions[command[2]],
+                       "Menu " .. command[2] .. " does not exist.")
+            end
             table.insert(commandFunctions, self:getActionFunction(desc, command))
         end
 
-        local finalFunction = function() self:runCommands(commandFunctions) end
+        local finalFunction = function() runCommands(commandFunctions) end
 
         -- Create the menuItem object
         self:createMenuItem(category,
@@ -211,7 +215,7 @@ function Menu:bindToMenu(menuItem,
 
     assert(menuItem, "Menu item is nil")
 
-    -- Alert menuHammer the item was activated
+    -- Alert MenuHammer the item was activated
     local preprocessFunction = function() self.hammer:itemActivated(menuItem.category) end
 
     local finalFunction = function()
@@ -226,99 +230,118 @@ function Menu:bindToMenu(menuItem,
 
     local displayTitle = menuItem:displayTitle()
 
-    if menuItem.category ~= mhConstants.category.blank then
-        local newModalBind = self.modal:bind(menuItem.modifier,
-                                             menuItem.key,
-                                             displayTitle,
-                                             finalFunction)
+    local newModalBind = self.modal:bind(menuItem.modifier,
+                                         menuItem.key,
+                                         displayTitle,
+                                         finalFunction)
 
-        menuItem.desc = newModalBind.keys[tableLength(newModalBind.keys)].msg
-    end
+    menuItem.desc = newModalBind.keys[tableLength(newModalBind.keys)].msg
 end
 
 ----------------------------------------------------------------------------------------------------
--- Run shell command
-function Menu:runShellCommand(shellCommand)
-    assert(shellCommand)
-
-    local commandString = '"' .. shellCommand .. '"'
-
-    local appleScript = "do shell script " .. commandString
-
-    print("Running shell command: " .. appleScript)
-
-    local openFileTask = hs.task.new(
-        "/usr/bin/osascript",
-        function(exitCode, standardOut, standardError)
-
-            print("Editor exit code: " .. exitCode)
-            if exitCode ~= 0 then
-                hs.notify.show("FAILED to open file",
-                               shellCommand .. " not found.  Check the logs.",
-                               "")
-            end
-
-            print("Callback standard out: \n" .. standardOut)
-            print("Callback standard error: \n" .. standardError)
-        end,
-        {
-            '-e',
-            appleScript,
-        }
-    )
-
-    openFileTask:start()
-end
+------------------------------------ Action Functions ----------------------------------------------
+----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
--- Bind open file
-function Menu:openEditor(filePath)
-    assert(filePath, "No file path provided")
-    local openFileFunction = function()
+-- Launch an application by name or package id.
+function Menu:launchApplication(desc, identifier)
 
-        local commandString = '"sh -c \'' .. menuTextEditor .. ' ' ..
-            filePath .. '\'"'
-
-        local appleScript = "do shell script " .. commandString
-
-        print("Running command: " .. appleScript)
-
-        local openFileTask = hs.task.new(
-            "/usr/bin/osascript",
-            function(exitCode, standardOut, standardError)
-
-                print("Editor exit code: " .. exitCode)
-                if exitCode ~= 0 then
-                    hs.notify.show("FAILED to open file",
-                                   filePath .. " not found.  Check the logs.",
-                                   "")
-                end
-
-                print("Callback standard out: \n" .. standardOut)
-                print("Callback standard error: \n" .. standardError)
-            end,
-            {
-                '-e',
-                appleScript,
-            }
-        )
-
-        openFileTask:start()
+    assert(desc, "Desc is nil")
+    assert(identifier, "Identifier is nil for desc " .. desc)
+    local appIdentifier = identifier
+    if appIdentifier == nil then
+        appIdentifier = desc
     end
 
-    openFileFunction()
+    print("")
+    print("Launching " .. appIdentifier)
+    print("")
+
+    -- Launch the application
+    hs.application.open(appIdentifier, nil, true)
 end
 
 ----------------------------------------------------------------------------------------------------
--- Bind function
+-- Get user input
+function Menu:getUserInput(valueIdentifier, messageValue, informativeText, defaultValue)
+
+    assert(messageValue, "No message provided.")
+
+    local informText = informativeText
+    local default = defaultValue
+
+    if informText == nil then
+        informText = ""
+    end
+
+    if default == nil then
+        default = ""
+    end
+
+    hs.focus()
+
+    local buttonValue, textValue = hs.dialog.textPrompt(messageValue,
+                                                        informText,
+                                                        default,
+                                                        "Ok",
+                                                        "Cancel")
+
+    self.hammer.storedValues[valueIdentifier] = {buttonValue, textValue}
+
+end
+
+----------------------------------------------------------------------------------------------------
+-- Execute the provided key combination
+function Menu:runKeyCommand(modifiers, key)
+
+    assert(key, "Key is nil")
+
+    -- Make a string of the modifiers for display
+    local modifierString = ""
+    for _, value in ipairs(modifiers) do
+        modifierString = modifierString .. value .. " "
+    end
+
+    print("Executing key command " .. modifierString .. " " .. key)
+
+    -- Close any menu that is open
+    self.hammer:closeMenus()
+
+    hs.eventtap.keyStroke(modifiers, key)
+end
+
+----------------------------------------------------------------------------------------------------
+-- Type text into current window
+function Menu:typeText(textToType)
+
+    assert(textToType, "No text provided")
+
+    print("Typing text " .. textToType)
+
+    hs.eventtap.keyStrokes(textToType)
+end
+----------------------------------------------------------------------------------------------------
+-- Open URL
+function Menu:openURL(urlToOpen)
+
+    print("Opening URL with raw string: " .. urlToOpen)
+
+    local processedString = replacePlaceholders(urlToOpen, self.hammer.storedValues, true)
+
+    print("Opening URL: " .. processedString)
+    hs.urlevent.openURL(processedString)
+end
+
+----------------------------------------------------------------------------------------------------
+-- Run a shell script
 function Menu:runScript(scriptName, useAdmin)
     local scriptFunction = function()
 
         local quotedName = '"' .. scriptName .. '"'
         local commandToRun = "do shell script " .. quotedName
-        -- if useAdmin then
-        --   commandToRun = commandToRun .. " with administrator privileges"
-        -- end
+        if useAdmin then
+            commandToRun = commandToRun .. " with administrator privileges"
+        end
 
         print("Running script " .. scriptName)
         print("Command: " .. commandToRun)
@@ -346,7 +369,7 @@ function Menu:runScript(scriptName, useAdmin)
         local scriptEnvironment = scriptTask:environment()
         if askpassLocation then
             print("Using askpass: " .. askpassLocation)
-            scriptEnvironment.SUDOaSKPASS = askpassLocation
+            scriptEnvironment.SUDOASKPASS = askpassLocation
         else
             print("Admin set but no path to askpass")
         end
@@ -361,6 +384,119 @@ function Menu:runScript(scriptName, useAdmin)
 end
 
 ----------------------------------------------------------------------------------------------------
+-- Run shell command
+function Menu:runShellCommand(shellCommand)
+    assert(shellCommand)
+
+    local commandString = '"' .. shellCommand .. '"'
+
+    local appleScript = "do shell script " .. commandString
+
+    print("Running shell command: " .. appleScript)
+
+    local shellCommandTask = hs.task.new(
+        "/usr/bin/osascript",
+        function(exitCode, standardOut, standardError)
+
+            print("Editor exit code: " .. exitCode)
+            if exitCode ~= 0 then
+                hs.notify.show("FAILED to open file",
+                               shellCommand .. " not found.  Check the logs.",
+                               "")
+            end
+
+            print("Callback standard out: \n" .. standardOut)
+            print("Callback standard error: \n" .. standardError)
+        end,
+        {
+            '-e',
+            appleScript,
+        }
+    )
+
+    shellCommandTask:start()
+end
+
+----------------------------------------------------------------------------------------------------
+-- Bind open file
+function Menu:openFile(filePath)
+
+    assert(filePath, "No file path provided")
+
+    local commandString = '"sh -c \'open ' .. filePath .. '\'"'
+
+    local appleScript = "do shell script " .. commandString
+
+    print("Running command: " .. appleScript)
+
+    local openFileTask = hs.task.new(
+        "/usr/bin/osascript",
+        function(exitCode, standardOut, standardError)
+
+            print("Exit code: " .. exitCode)
+            if exitCode ~= 0 then
+                hs.notify.show("FAILED to open file",
+                                filePath .. " not found.  Check the logs.",
+                                "")
+            end
+
+            print("Callback standard out: \n" .. standardOut)
+            print("Callback standard error: \n" .. standardError)
+        end,
+        {
+            '-e',
+            appleScript,
+        }
+    )
+
+    openFileTask:start()
+end
+
+----------------------------------------------------------------------------------------------------
+-- Perform a system action
+function Menu:runSystemAction(systemAction, confirm)
+
+    assert(systemAction, "System action is nil")
+
+    local runAction = true
+
+    -- If confirm is set to true, then get the user to confirm if the action should proceed.
+    if confirm and not getUserConfirmation("Action: " .. systemAction,
+                                           "Are you sure?") then
+        runAction = false
+    end
+
+    -- If still proceeding, run the matching action.
+    if runAction then
+        local systemActions = {
+            [cons.sys.shutdown] = function() hs.caffeinate.shutdownSystem() end,
+            [cons.sys.restart] = function() hs.caffeinate.restartSystem() end,
+            [cons.sys.logout] = function() hs.caffeinate.logOut() end,
+            [cons.sys.logoutnow] = function() self:runKeyCommand({'cmd', 'alt', 'shift'}, 'q') end,
+            [cons.sys.lockscreen] = function() hs.caffeinate.systemSleep() end,
+            [cons.sys.switchuser] = function() hs.caffeinate.lockScreen() end,
+            [cons.sys.screensaver] = function() hs.caffeinate.startScreensaver() end,
+            [cons.sys.forcequit] = function() hs.application.frontmostApplication():kill9() end,
+        }
+
+        systemActions[systemAction]()
+    end
+end
+
+----------------------------------------------------------------------------------------------------
+-- Pause execution
+function Menu:pauseExecution(duration)
+
+    assert(duration, "No duration provided.")
+    assert(tonumber(duration), "Duration provided not a number.")
+
+    print("Sleeping for " .. duration .. " microseconds")
+
+    -- TODO: Try to replace this with something less crappy than a sleep.
+    hs.timer.usleep(tonumber(duration))
+end
+
+----------------------------------------------------------------------------------------------------
 -- Change resolution
 function Menu:changeResolution(resolutionMode)
 
@@ -370,102 +506,16 @@ function Menu:changeResolution(resolutionMode)
 end
 
 ----------------------------------------------------------------------------------------------------
--- Launch an application by name or package id.
-function Menu:launchApplication(desc, identifier, closeMenu, waitForWindow)
-
-    assert(desc, "Desc is nil")
-    assert(identifier, "Identifier is nil for desc " .. desc)
-    local appIdentifier = identifier
-    if appIdentifier == nil then
-        appIdentifier = desc
-    end
-
-    print("")
-    print("Launching " .. appIdentifier)
-    print("")
-
-    -- Launch the application
-    hs.application.open(appIdentifier, nil, true)
-    -- hs.application.launchOrFocus(appIdentifier)
-
-    -- Default to close or if true is passed.
-    if closeMenu == nil or closeMenu then
-        self.hammer:closeMenus()
-    end
-end
-
-----------------------------------------------------------------------------------------------------
--- Bind resizer
-function Menu:runResizer(action)
-
-    assert(action, "Action is nil")
-
-    print("Resizing with action " .. action)
-    local function hasValue (tab, val)
-        for index, value in ipairs(tab) do
-            if value == val then
-                return true
-            end
-        end
-
-        return false
-    end
-
-    local stepmoveResizers = {mhConstants.resizer.left, mhConstants.resizer.right,
-                              mhConstants.resizer.up, mhConstants.resizer.down}
-    local moveResizers = {mhConstants.resizer.halfLeft, mhConstants.resizer.halfRight,
-                          mhConstants.resizer.halfUp, mhConstants.resizer.halfDown,
-                          mhConstants.resizer.northWest, mhConstants.resizer.northEast,
-                          mhConstants.resizer.southWest, mhConstants.resizer.southEast,
-                          mhConstants.resizer.fullScreen, mhConstants.resizer.centerWindow}
-    local stepResizers = {mhConstants.resizer.stepLeft, mhConstants.resizer.stepRight,
-                          mhConstants.resizer.stepUp, mhConstants.resizer.stepDown}
-    local moveAndResizeResizers = {mhConstants.resizer.expand, mhConstants.resizer.shrink}
-    local screenResizers = {mhConstants.resizer.screenLeft, mhConstants.resizer.screenRight,
-                            mhConstants.resizer.screenUp, mhConstants.resizer.screenDown,
-                            mhConstants.resizer.screenNext}
-
-    local pressedFunction = nil
-
-    if hasValue(stepmoveResizers, action) then
-        pressedFunction = function() spoon.WinWin:stepMove(action) end
-    elseif hasValue(moveResizers, action) then
-        pressedFunction = function() spoon.WinWin:stash() spoon.WinWin:moveAndResize(action) end
-    elseif hasValue(moveAndResizeResizers, action) then
-        pressedFunction = function() spoon.WinWin:moveAndResize(action) end
-    elseif hasValue(screenResizers, action) then
-        local newAction = string.sub(action, string.find(action, "_")+1)
-        pressedFunction = function() spoon.WinWin:stash() spoon.WinWin:moveToScreen(newAction) end
-    elseif action == mhConstants.resizer.undo then
-        pressedFunction = function() spoon.WinWin:undo() end
-    elseif action == mhConstants.resizer.redo then
-        pressedFunction = function() spoon.WinWin:redo() end
-    elseif action == mhConstants.resizer.centerCursor then
-        pressedFunction = function() spoon.WinWin:centerCursor() end
-    elseif hasValue(stepResizers, action) then
-        local newAction = string.sub(action, string.find(action, "_")+1)
-        pressedFunction = function() spoon.WinWin:stepResize(newAction) end
-    end
-
-    if pressedFunction ~= nil then
-        pressedFunction()
-    end
-end
-
-----------------------------------------------------------------------------------------------------
 -- Bind music command
 function Menu:runMediaCommand(action, quantity)
 
     local mediaCommand = nil
 
-    if action == "previous" then
-        mediaCommand = function() hs.itunes:previous() end
-    elseif action == "next" then
-        mediaCommand = function() hs.itunes:next() end
-    elseif action == "playpause" then
-        mediaCommand = function() hs.itunes:playpause() end
-    elseif action == "volume" then
-        mediaCommand = function()
+    local mediaCommands = {
+        previous = function() hs.itunes:previous() end,
+        next = function() hs.itunes:next() end,
+        playpause = function() hs.itunes:playpause() end,
+        volume = function()
             local device = hs.audiodevice.defaultOutputDevice()
             local volume = device:volume() + quantity
 
@@ -474,9 +524,8 @@ function Menu:runMediaCommand(action, quantity)
             local subtitle = "Volume is now " .. tostring(volume)
 
             hs.notify.show("Volume changed", subtitle, "")
-        end
-    elseif action == "mute" then
-        mediaCommand = function()
+        end,
+        mute = function()
             local device = hs.audiodevice.defaultOutputDevice()
 
             if device:muted() then
@@ -488,9 +537,8 @@ function Menu:runMediaCommand(action, quantity)
                 device:setOutputMuted(true)
                 hs.notify.show("Muted", "", "")
             end
-        end
-    elseif action == "brightness" then
-        mediaCommand = function()
+        end,
+        brightness = function()
             local brightness = hs.brightness.get()
 
             brightness = brightness + quantity
@@ -500,12 +548,14 @@ function Menu:runMediaCommand(action, quantity)
             local subtitle = "Brightness is now " .. tostring(brightness)
 
             hs.notify.show("Brightness changed", subtitle, "")
-        end
-    end
+        end,
+    }
 
-    mediaCommand()
+    mediaCommands[action]()
 end
 
+----------------------------------------------------------------------------------------------------
+-- Get a function to execute to perform the needed action.
 function Menu:getActionFunction(desc, command)
 
     assert(desc, self.name .. " sent a nil desc")
@@ -513,85 +563,124 @@ function Menu:getActionFunction(desc, command)
 
     assert(commandType, "Command type is nil")
 
-    local returnCommand = nil
+    print("Getting action function for " .. desc)
 
-    if commandType == mhConstants.action.menu then
-        -- Add a menu
-        local menu = command[2]
-        assert(menu, "Sub menu is nil for " .. self.name .. " " .. desc)
-        returnCommand = function() self.hammer:switchMenu(menu, true) end
-    elseif commandType == mhConstants.action.launcher then
-        -- Launch an application.
-        local appIdentifier = command[2]
-        local closeMenu = command[3]
-        returnCommand = function() self:launchApplication(desc, appIdentifier, closeMenu) end
-    elseif commandType == mhConstants.action.keycombo then
-        local commandModifiers = command[2]
-        local commandKey = command[3]
-        returnCommand = function() self:runKeyCommand(commandModifiers, commandKey) end
-    elseif commandType == mhConstants.action.resolution then
-        local resolutionMode = command[2]
-        returnCommand = function() self:changeResolution(resolutionMode) end
-    elseif commandType == mhConstants.action.mediakey then
-        local action = command[2]
-        local quantity = command[3]
-        returnCommand = function() self:runMediaCommand(action, quantity) end
-    elseif commandType == mhConstants.action.func then
-        local bindFunction = command[2]
-        returnCommand = bindFunction
-    elseif commandType == mhConstants.action.resizer then
-        local action = command[2]
-        returnCommand = function() self:runResizer(action) end
-    elseif commandType == mhConstants.action.script then
-        local scriptName = command[2]
-        local useAdmin = command[3]
-        returnCommand = function() self:runScript(scriptName, useAdmin) end
-    elseif commandType == mhConstants.action.openfile then
-        local fileName = command[2]
-        assert(fileName, "FileName for " .. desc .. " is nil")
-        assert(type(fileName) == "string", "File name provided is of type: " .. type(fileName))
-        returnCommand = function() self:openEditor(fileName) end
-    elseif commandType == mhConstants.action.shellcommand then
-        local shellCommand = command[2]
-        assert(shellCommand, "Shell command for " .. desc .. " is nil")
-        returnCommand = function() self:runShellCommand(shellCommand) end
-    end
+    local actionTable = {
+        [cons.act.menu] = function()
+            -- Add a menu
 
-    return returnCommand
-end
+            local menu = command[2]
+            assert(menu, "Sub menu is nil for " .. self.name .. " " .. desc)
 
-----------------------------------------------------------------------------------------------------
--- Run all the provided functions.
-function Menu:runCommands(commandFunctions)
-    print("Running commands")
-    for index, commandFunction in ipairs(commandFunctions) do
-        commandFunction()
-    end
-end
+            self.hammer:switchMenu(menu, true)
+        end,
+        [cons.act.launcher] = function()
+            -- Launch an application.
 
-----------------------------------------------------------------------------------------------------
--- Launch an application by name or package id.
-function Menu:runKeyCommand(modifiers, key)
+            local appIdentifier = command[2]
+            local closeMenu = command[3]
 
-    local modifierString = ""
-    for _, value in ipairs(modifiers) do
-        modifierString = modifierString .. value .. " "
-    end
+            self:launchApplication(desc, appIdentifier, closeMenu)
+        end,
+        [cons.act.func] = function()
+            -- Execute provided function
 
-    print("Executing key command " .. modifierString .. " " .. key)
+            local bindFunction = command[2]
 
-    self.hammer:closeMenus()
+            bindFunction()
+        end,
+        [cons.act.userinput] = function()
+            -- Get user input
 
-    if modifierString == 'type ' then
-        print("Typing text " .. key)
-        hs.eventtap.keyStrokes(key)
-    elseif modifierString == 'sleep ' then
-        print("Sleeping for " .. key .. " microseconds")
-        -- TODO: Replace this with something less crappy than a sleep.
-        hs.timer.usleep(tonumber(key))
-    else
-        hs.eventtap.keyStroke(modifiers, key)
-    end
+            -- Get the identifier of the input, the message, text and default value
+            local valueIdentifier = command[2]
+            local messageValue = command[3]
+            local informativeText = command[4]
+            local defaultValue = command[5]
+
+            self:getUserInput(valueIdentifier, messageValue, informativeText, defaultValue)
+        end,
+        [cons.act.keycombo] = function()
+            -- Execute a key combination
+
+            local commandModifiers = command[2]
+            local commandKey = command[3]
+
+            self:runKeyCommand(commandModifiers, commandKey)
+        end,
+
+        [cons.act.typetext] = function()
+            -- Type text into current window
+
+            local textToType = command[2]
+
+            self:typeText(textToType)
+        end,
+        [cons.act.script] = function()
+            -- Execute shell script
+
+            local scriptName = command[2]
+            local useAdmin = command[3]
+
+            self:runScript(scriptName, useAdmin)
+        end,
+        [cons.act.openurl] = function()
+            -- Open a URL
+
+            local urlToOpen = command[2]
+
+            self:openURL(urlToOpen)
+        end,
+        [cons.act.shellcommand]  = function()
+            -- Execute a shell command
+
+            local shellCommand = command[2]
+            assert(shellCommand, "Shell command for " .. desc .. " is nil")
+
+            self:runShellCommand(shellCommand)
+        end,
+        [cons.act.openfile] = function()
+            -- Open a file
+
+            local fileName = command[2]
+            assert(fileName, "FileName for " .. desc .. " is nil")
+            assert(type(fileName) == "string", "File name provided is of type: " .. type(fileName))
+
+            self:openFile(fileName)
+        end,
+        [cons.act.system] = function()
+            -- Perform a system action (reboot, shutdown, etc)
+
+            local systemAction = command[2]
+            local confirm = command[3]
+
+            self:runSystemAction(systemAction, confirm)
+        end,
+        [cons.act.sleep] = function()
+            -- Pause execution (sleep)
+
+            local duration = command[2]
+
+            self:pauseExecution(duration)
+        end,
+        [cons.act.resolution] = function()
+            -- Change the screen resolution
+
+            local resolutionMode = command[2]
+
+            self:changeResolution(resolutionMode)
+        end,
+        [cons.act.mediakey] = function()
+            -- Press media key
+
+            local action = command[2]
+            local quantity = command[3]
+
+            self:runMediaCommand(action, quantity)
+        end,
+    }
+
+    return actionTable[commandType]
 end
 
 return Menu

@@ -31,7 +31,7 @@ globals = {
 
     "menuItemPrefix",
     "menuItemColors",
-    "mhConstants",
+    "cons",
 
     -- Supporting functions
     "tableLength",

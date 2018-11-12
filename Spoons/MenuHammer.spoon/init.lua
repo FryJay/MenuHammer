@@ -7,41 +7,42 @@
 ---------------------------------- Menuhammer Definition -------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
-local menuHammer = {}
-menuHammer.__index = menuHammer
+local mh = {}
+mh.__index = mh
 
 -- Metadata
-menuHammer.name = "MenuHammer"
-menuHammer.version = "0.1"
-menuHammer.author = "FryJay <darin.j.fry@gmail.com>"
-menuHammer.homepage = "https://github.com/FryJay/MenuHammer"
-menuHammer.license = "MIT - https://opensource.org/licenses/MIT"
+mh.name = "MenuHammer"
+mh.version = "0.2"
+mh.author = "FryJay <darin.j.fry@gmail.com>"
+mh.homepage = "https://github.com/FryJay/MenuHammer"
+mh.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- Internal function used to find our location, so we know where to load files from
 local function scriptPath()
     local str = debug.getinfo(2, "S").source:sub(2)
     return str:match("(.*/)")
 end
-menuHammer.spoonPath = scriptPath()
+mh.spoonPath = scriptPath()
 
 -- Import the constants and support functions
-dofile(menuHammer.spoonPath.."/Support.lua")
-Menu = dofile(menuHammer.spoonPath.."/Menu.lua")
+dofile(mh.spoonPath.."/Support.lua")
+Menu = dofile(mh.spoonPath.."/Menu.lua")
 
-menuHammer.canvas = nil
-menuHammer.menuList = {}
-menuHammer.activeMenu = nil
+mh.canvas = nil
+mh.menuList = {}
+mh.activeMenu = nil
 
-menuHammer.menuItems = {}
+mh.menuItems = {}
+mh.storedValues = {}
 
-menuHammer.rootMenu = nil
-menuHammer.interactiveMode = false
+mh.rootMenu = nil
+mh.interactiveMode = false
 
 ----------------------------------------------------------------------------------------------------
 ------------------------------------------ Config file ---------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
-dofile(menuHammer.spoonPath.."/MenuConfigDefaults.lua")
+dofile(mh.spoonPath.."/MenuConfigDefaults.lua")
 
 menuCustomConfig = hs.fs.pathToAbsolute(hs.configdir .. '/menuHammerCustomConfig.lua')
 
@@ -53,7 +54,7 @@ assert(menuItemPrefix, "No menu item prefixes defined.")
 assert(menuItemColors, "No menu item colors defined.")
 assert(menuHammerMenuList, "No menu list configured.")
 
-menuHammer.menuItemDefinitions = menuHammerMenuList
+mh.menuItemDefinitions = menuHammerMenuList
 
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------- Apply options --------------------------------------------
@@ -79,7 +80,7 @@ end
 ---------------------------------------- Menuhammer Init -------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
-function menuHammer:init()
+function mh:init()
 
     self.rootMenu = hs.hotkey.modal.new(
         menuHammerToggleKey[1],
@@ -109,9 +110,13 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Populate Menus
-function menuHammer:populateMenus()
+function mh:populateMenus()
     print("Populating menus")
     for menuName, menuConfig in pairs(self.menuItemDefinitions) do
+        -- If a parent menu is provided, ensure it exists
+        if parentMenu ~= nil then
+            assert(self.menuItemDefinitions[parentMenu], "Parent menu does not exist.")
+        end
         self:createMenu(menuName,
                         menuConfig.parentMenu,
                         menuConfig.menuHotkey,
@@ -121,7 +126,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Create menu
-function menuHammer:createMenu(menuName,
+function mh:createMenu(menuName,
                                parentMenu,
                                menuHotkey,
                                menuItems)
@@ -143,7 +148,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Toggle a menu
-function menuHammer:toggleMenu(menuName, showcheat)
+function mh:toggleMenu(menuName, showcheat)
 
     assert(menuName, "Menu name is nil")
     assert(type(menuName) == "string", "Menu name has type " .. type(menuName))
@@ -157,7 +162,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Calculate number of rows
-function menuHammer:calculateNumberOfRows(menuItems, numberOfColumns)
+function mh:calculateNumberOfRows(menuItems, numberOfColumns)
 
     local numberOfRows = math.ceil(tableLength(menuItems) / numberOfColumns)
 
@@ -170,7 +175,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Turn on the menu UI
-function menuHammer:toggleMenuUI(menuName)
+function mh:toggleMenuUI(menuName)
 
     assert(menuName, "Menu name is nil")
     assert(self.menuList[menuName], "No menu named " .. menuName)
@@ -237,7 +242,7 @@ function menuHammer:toggleMenuUI(menuName)
     end
 end
 
-function menuHammer:drawControlItems(controlItems,
+function mh:drawControlItems(controlItems,
                                       numberOfRows,
                                       columnNumber,
                                       controlItemWidth,
@@ -282,7 +287,7 @@ function menuHammer:drawControlItems(controlItems,
     return canvasNumber
 end
 
-function menuHammer:drawMenuItems(menuItems,
+function mh:drawMenuItems(menuItems,
                                   numberOfRows,
                                   numberOfColumns,
                                   menuItemWidth,
@@ -318,7 +323,7 @@ function menuHammer:drawMenuItems(menuItems,
     end
 end
 
-function menuHammer:drawMenuItem(menuItem,
+function mh:drawMenuItem(menuItem,
                                  rowNumber,
                                  columnNumber,
                                  canvasNumber,
@@ -361,7 +366,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Draw the background for a menu item.
-function menuHammer:drawBackground(canvasNumber,
+function mh:drawBackground(canvasNumber,
                                    backgroundColor,
                                    xValue,
                                    yValue,
@@ -385,7 +390,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Draw the text for a menu item.
-function menuHammer:drawText(canvasNumber,
+function mh:drawText(canvasNumber,
                              textString,
                              textColor,
                              xValue,
@@ -415,7 +420,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Switch menu
-function menuHammer:switchMenu(menuName, showUI)
+function mh:switchMenu(menuName, showUI)
     assert(menuName, "Menu name is nil")
     print("")
     print("Switching to new menu: " .. menuName)
@@ -438,7 +443,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Close menus
-function menuHammer:closeMenus()
+function mh:closeMenus()
 
     -- Shut off the active menu
     if self.activeMenu ~= nil then
@@ -462,7 +467,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Set the menu bar text
-function menuHammer:menuBarText(text)
+function mh:menuBarText(text)
 
     if showMenuBarItem then
         local newText = text
@@ -481,14 +486,14 @@ function menuHammer:menuBarText(text)
 end
 
 ----------------------------------------------------------------------------------------------------
--- Alert menuHammer an item was selected
-function menuHammer:itemActivated(itemType)
+-- Alert MenuHammer an item was selected
+function mh:itemActivated(itemType)
     if itemType == "action" then
-        if not menuHammer.interactiveMode then
-            menuHammer:closeMenus()
+        if not mh.interactiveMode then
+            mh:closeMenus()
         end
     elseif itemType == "exit" then
-        menuHammer:closeMenus()
+        mh:closeMenus()
     end
 end
 
@@ -496,5 +501,5 @@ end
 ---------------------------------------- End Communication -----------------------------------------
 ----------------------------------------------------------------------------------------------------
 
--- Return the menuHammer object.
-return menuHammer
+-- Return the mh object.
+return mh
