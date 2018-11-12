@@ -1,6 +1,8 @@
 # MenuHammer
 A Spacemacs inspired menu system for macOS built for Hammerspoon.
 
+![example-menu](https://raw.githubusercontent.com/FryJay/MenuHammer/master/screenshots/MenuHammer-example.png)
+
 It displays user configured menus on the bottom of the screen.  Each menu has series of menu items that can 
 perform a series of actions when activated by the configured hotkey.
 
