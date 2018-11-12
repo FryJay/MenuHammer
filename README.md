@@ -21,7 +21,7 @@ Those actions include:
 - Opening files
 
 It has some default menus configured but you will most certainly want to customize it.  Out of the box it will
-bind âŒ˜-âŒ¥-âŒƒ-q to enable/disable MenuHammer and âŒ¥-space to show/hide MenuHammer.
+bind Command-Option-Control-q to enable/disable MenuHammer and Option-Space to show/hide MenuHammer.
 
 It is still very much a work in progress.  I have a large list of features I still want to add and some 
 features are only partially implemented.  Use at your own risk.
