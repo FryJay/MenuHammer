@@ -1,5 +1,5 @@
 # MenuHammer
-A Spacemacs inspired menu system for macOS built for Hammerspoon.  
+A Spacemacs inspired menu system for macOS built for Hammerspoon.
 
 It displays user configured menus on the bottom of the screen.  Each menu has series of menu items that can 
 perform a series of actions when activated by the configured hotkey.
@@ -8,14 +8,18 @@ Those actions include:
 
 - Loading other menus
 - Opening applications
+- Getting user input
+- Executing a lua function
 - Executing key combinations
-- Execute a shell script
-- Execute a shell command
-- Open files (not really implemented yet, only opens files in Emacs)
-- Execute a provided lua function
+- Typing text into current window
+- Executing a shell script
+- Executing a shell command
+- Opening a URL
+- Sleeping (pause) for a specified amount of time
+- Opening files
 
 It has some default menus configured but you will most certainly want to customize it.  Out of the box it will
-bind ⌘-⌥-⌃-q to enable/disable MenuHammer and ⌥-space to show/hide MenuHammer.
+bind âŒ˜-âŒ¥-âŒƒ-q to enable/disable MenuHammer and âŒ¥-space to show/hide MenuHammer.
 
 It is still very much a work in progress.  I have a large list of features I still want to add and some 
 features are only partially implemented.  Use at your own risk.
@@ -51,25 +55,25 @@ Here is an example of a basic menu configuration that covers some of the things 
             parentMenu = nil,
             menuHotkey = {{'alt'}, 'space'},
             menuItems =  {
-                {mhConstants.category.menu, '', 'A', 'Applications', {
-                      {mhConstants.action.menu, "applicationMenu"}
+                {cons.cat.menu, '', 'A', 'Applications', {
+                      {cons.act.menu, "applicationMenu"}
                 }},
-                {mhConstants.category.action, '', 'T', "Terminal", {
-                      {mhConstants.action.launcher, 'Terminal'}
+                {cons.cat.action, '', 'T', "Terminal", {
+                      {cons.act.launcher, 'Terminal'}
                 }},
-                {mhConstants.category.action, '', 'D', 'Desktop', {
-                      {mhConstants.action.launcher, 'Finder'},
-                      {mhConstants.action.keycombo, {'cmd', 'shift'}, 'd'},
+                {cons.cat.action, '', 'D', 'Desktop', {
+                      {cons.act.launcher, 'Finder'},
+                      {cons.act.keycombo, {'cmd', 'shift'}, 'd'},
                 }},
-                {mhConstants.category.action, '', 'H', "Hammerspoon Manual", {
-                      {mhConstants.action.func, function()
+                {cons.cat.action, '', 'H', "Hammerspoon Manual", {
+                      {cons.act.func, function()
                           hs.doc.hsdocs.forceExternalBrowser(true)
                           hs.doc.hsdocs.moduleEntitiesInSidebar(true)
                           hs.doc.hsdocs.help()
                       end }
                 }},
-                {mhConstants.category.action, '', 'X', "Mute/Unmute", {
-                      {mhConstants.action.mediakey, "mute"}
+                {cons.cat.action, '', 'X', "Mute/Unmute", {
+                      {cons.act.mediakey, "mute"}
                 }},
             }
         },
@@ -77,8 +81,8 @@ Here is an example of a basic menu configuration that covers some of the things 
             parentMenu = "mainMenu",
             menuHotkey = nil,
             menuItems = {
-                {mhConstants.category.action, '', 'A', "App Store", {
-                      {mhConstants.action.launcher, 'App Store'}
+                {cons.cat.action, '', 'A', "App Store", {
+                      {cons.act.launcher, 'App Store'}
                 }},
             }
         },
@@ -100,11 +104,13 @@ must be set in order to load MenuHammer.  Any menu that does not have a hotkey o
 menu is unreachable.
 - menuItems - A table of menu items that will be shown in the menu.
 
+Example of a basic menu configuration:
+
 ```lua
     mainMenu = {
-        parentMenu = nil,
-        menuHotkey = {{'alt'}, 'space'},
-        menuItems =  {
+        parentMenu = nil,                 -- The identifier of the parent menu.  Nil if no parent.
+        menuHotkey = {{'alt'}, 'space'},  -- The hotkey that loads the menu.  Nil if no hotkey.
+        menuItems =  {                    -- The menu items for this menu.
             <menu items go here>
         }
     }
@@ -125,48 +131,58 @@ If no modifiers are required, enter a blank string or nil.
 ### Categories
 
 Menu items have a category that are mostly used for display purposes.  The only category that performs an
-action by default is the "exit" menu item which will always close MenuHammer.  The category selected 
+action by default is the "exit" menu item which will always close the open menus.  The category selected 
 will determine what default colors are applied and what symbol is displayed as a prefix.  Typically you 
-will only need to use "menu" and "action".  You can use the mhConstants.category table to refer to 
-specific categories.  E.g. mhConstants.category.menu.
+will only need to use "submenu" and "action".  You can use the cons.cat table to refer to 
+specific categories.  E.g. cons.cat.menu.
 
-#### Menu - mhConstants.category.menu 
+#### Sub Menu - cons.cat.submenu 
 
 This category is used when the menu item is for loading another menu.
 
 For example, this menu item will load the Applications menu:
 
 ```lua
-    {mhConstants.category.menu, '', 'A', 'Applications', {
-        {mhConstants.bind.menu, "applicationMenu""}
-    }},
+    {cons.cat.menu,                           -- Category is menu
+     '',                                      -- No modifier
+     'A',                                     -- "a" is the hotkey to open the menu
+     'Applications',                          -- The description of the menu item to display
+     {                                        -- The table of actions to perform
+         {cons.act.menu, "applicationMenu""}  -- Action to open the Application menu
+     }
+    },
 ```
 
-#### Action - mhConstants.category.action
+#### Action - cons.cat.action
 
 This category is used when the menu item performs one or more actions.  MenuHammer closes when actions are 
-performed.  MenuHammer will close the open menu when an action is performed.  
+performed.  MenuHammer will close the open menu when an action is performed.
 
 For example, this menu item will launch the Terminal application:
 
 ```lua
-    {mhConstants.category.action, '', 'T', "Terminal", {
-        {mhConstants.bind.launcher, 'Terminal'}
-    }},
+    {cons.cat.action,                        -- Category is action 
+     '',                                     -- No modifier
+     'T',                                    -- "t" is the hokey to activate the action
+     "Terminal",                             -- The description of the action
+     {                                       -- The table of actions to perform
+         {cons.act.launcher, 'Terminal'}     -- Action to launch the Terminal application.
+     }
+    },
 ```
 
-#### Exit - mhConstants.category.exit 
+#### Exit - cons.cat.exit 
 
 Used for menu items that close MenuHammer.  There is an exit action defined by default on all menus that is 
 bound to escape.
 
-#### Back - mhConstants.category.back 
+#### Back - cons.cat.back 
 
 Used for "back buttons" to go to the menu set as the parent menu to the current menu.  There a back action 
 defined by default on all menus that is bound to delete.  This category still requires that a "menu" action
 be defined though this should be made automatic in the future.
 
-#### Navigation - mhConstants.category.navigation
+#### Navigation - cons.cat.navigation
 
 A general category used for any nagivation item that isn't "exit" or "back".  No menu items are defined by 
 default with this category.
@@ -174,13 +190,13 @@ default with this category.
 ### Actions
 
 There are several types of actions that can be performed by menu items.  Each menu item can perform a list of
-actions.  You can use the mhConstant.action table to refer to specific actions.  E.g. mhConstants.action.menu
+actions.  You can use the mhConstant.action table to refer to specific actions.  E.g. cons.act.menu
 to load a menu.
 
 Each action is defined as a table with an action type and a series of other values that are dependent on the
 action type.
 
-#### Menu - mhConstants.action.menu
+#### Menu - cons.act.menu
 
 This action loads the menu with the provided identifier. 
 
@@ -190,12 +206,15 @@ Arguments:
 will cause an error.
 
 ```lua
-    {mhConstants.category.menu, '', 'A', 'Applications', {
-        {mhConstants.bind.menu, "applicationMenu""}
+    {cons.cat.menu, '', 'A', 'Applications', {
+        {
+            cons.act.menu,     -- Action type
+            "applicationMenu"  -- Identifier
+        }
     }},
 ```
 
-#### Launcher - mhConstants.action.launcher
+#### Launcher - cons.act.launcher
 
 This action launches the application with the matching name.  Note that the name of the application must match
 exactly to the name of the app.  For example,  you must use "Google Chrome" instead of "Chrome".
@@ -203,58 +222,17 @@ exactly to the name of the app.  For example,  you must use "Google Chrome" inst
 Arguments:
 
 - Application name - The exact name of the application to load.
-- Close menu - A boolean that indicates whether the menu should close after the action is performed.
 
 ```lua
-    {mhConstants.category.action, '', 'S', "Safari", {
-          {mhConstants.bind.launcher, 'Safari'}
+    {cons.cat.action, '', 'S', "Safari", {
+        {
+            cons.act.launcher,  -- Action type
+            'Safari',           -- Application name
+        }
     }},
 ```
 
-#### Keycombo - mhConstants.action.keycombo
-
-This action will execute the provided key combination.
-
-Arguments:
-
-- Modifiers - A table of the modifiers to use when the key is pressed.  There are also two alternate values 
-here that will be moved into their own actions in the future.  If you put "type" as the modifier, MenuHammer
-will type the key value as if you were typing it at the keyboard.  If you put "sleep" as the modifier,
-MenuHammer will pause for the amount of time provided in the key argument.  This is not an ideal place for
-this functionality but it's an artifact of how it changed while I was developing it.
-- Key - The key to execute with the modifiers above.  As described above, this can also be keys that will be 
-typed by MenuHammer or a number used for sleeping the application (in nanoseconds).
-
-Here is a basic example of a keycombo:
-
-```lua
-    {mhConstants.category.action, '', 'A', 'Applications Folder', {
-          {mhConstants.bind.launcher, 'Finder'},
-          {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'a'},
-    }},
-```
-
-Here is an example of the "type" modifier:
-
-```lua
-    {mhConstants.category.action, 'shift', 'H', 'Hammerspoon Folder', {
-          {mhConstants.bind.launcher, 'Finder'},
-          {mhConstants.bind.keycombo, {'cmd', 'shift'}, 'g'},
-          {mhConstants.bind.keycombo, {'type'}, '~/.hammerspoon\n'},
-    }},
-```
-
-Here is an example of the "sleep" modifier:
-
-```lua
-    {mhConstants.category.action, 'shift', 'H', 'Hammerspoon Folder', {
-          {mhConstants.bind.launcher, 'Some app'},
-          {mhConstants.bind.keycombo, {'sleep'}, "1000000"},
-          {mhConstants.bind.keycombo, {'type'}, 'Some value that needs to wait for the app'},
-    }},
-```
-
-#### Func - mhConstants.action.func
+#### Func - cons.act.func
 
 This action will execute the provided function so it can be used to run other HammerSpoon or lua functionality.
 
@@ -263,12 +241,113 @@ Arguments:
 - Function - The function to execute when the menu item is activated.
 
 ```lua
-    {mhConstants.category.action, 'shift', 'F', "Force Quit Frontmost App", {
-          {mhConstants.bind.func, function() hs.application.frontmostApplication():kill9() end }
+    {cons.cat.action, 'shift', 'F', "Force Quit Frontmost App", {
+        {
+            cons.act.func,                                                -- Action type
+            function() hs.application.frontmostApplication():kill9() end  -- Function to execute
+        }
     }},
 ```
 
-#### Script - mhConstants.action.script
+#### User Input - cons.act.userinput
+
+This action will display a popup to the user asking them to provide input.   It will store the value in a table
+called "storedValues" that is owned by the MenuHammer object.  The values can be referenecd in future actions
+and can be replaced in text using placeholders formatted as "@@valueIdentifier@@".  Text replacement is only
+currently implemented on the openurl action.
+
+Arguments:
+
+- Value Identifier - An identifier that will be used for storing the value in the storedValues table.
+- Message - The message (title) to display to the user in the popup.
+- Informative Text - The text (body) to display in the popup.
+- Default value - The value to display in the input field when the popup appears.
+
+```lua
+    {cons.cat.action, '', 'W', 'Wikipedia',
+     {
+         {cons.act.userinput,                                             -- Action type
+          "luckyWikipedia",                                               -- Value Identifier
+          "Lucky Wikipedia",                                              -- Message
+          "Google a Wikipedia article and hit I'm Feeling Lucky button"}, -- Informative Text
+         {cons.act.openurl,
+          "http://www.google.com/search?q=@@luckyWikipedia@@%20site:wikipedia.org&meta=&btnI"
+         }
+    }},
+```
+
+#### Keycombo - cons.act.keycombo
+
+This action will execute the provided key combination.
+
+Arguments:
+
+- Modifiers - A table of the modifiers to use when the key is pressed. 
+- Key - The key to execute with the modifiers above.
+
+Here is a basic example of a keycombo:
+
+```lua
+    {cons.cat.action, '', 'A', 'Applications Folder', {
+        -- Open Finder
+        {cons.act.launcher, 'Finder'},
+        -- Send the key combo for the Applications folder
+        {
+            cons.act.keycombo,   -- Action type
+            {'cmd', 'shift'},    -- Modifiers
+            'a'                  -- Key
+        },
+    }},
+```
+
+#### Type Text - cons.act.typetext
+
+This action will type text into whatever field or window currently has focus.
+
+Arguments:
+
+- Text to type - The text to type into the current field or window.
+
+```lua
+    {cons.cat.action, 'shift', 'H', 'Hammerspoon Folder', {
+        -- Switch to Finder
+        {cons.act.launcher, 'Finder'},
+        -- Open folder location entry
+        {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+        -- Enter the text
+        {
+            cons.act.typetext,  -- Action type
+            '~/.hammerspoon\n'  -- Text to type
+        },
+    }},
+```
+
+#### Open URL - cons.act.openurl
+
+This action will open a URL in the default browser.  It will replace any text placeholders with values from the
+storedValues table owned by the MenuHammer object.  Placeholders are formatted as @@valueIdentifier@@.
+
+Arguments:
+
+- URL to open - The URL to open in the default browser.
+
+```lua
+    {cons.cat.action, '', 'W', 'Wikipedia',
+     {
+         {cons.act.userinput,
+          "luckyWikipedia", 
+          "Lucky Wikipedia",
+          "Google a Wikipedia article and hit I'm Feeling Lucky button"}, 
+         {
+             -- Action type
+             cons.act.openurl,
+             -- URL to open
+             "http://www.google.com/search?q=@@luckyWikipedia@@%20site:wikipedia.org&meta=&btnI"
+         }
+    }},
+```
+
+#### Script - cons.act.script
 
 This action will execute the provided shell script.
 
@@ -279,12 +358,12 @@ Arguments:
 This option currently does not work and will result in an error.
 
 ```lua
-    {mhConstants.category.action, '', 'S', 'Run this script', {
-        {mhConstants.bind.script, "~/scripts/some_script.sh"},
+    {cons.cat.action, '', 'S', 'Run this script', {
+        {cons.act.script, "~/scripts/some_script.sh"},
     }},
 ```
 
-#### Shellcommand - mhConstants.action.shellcommand
+#### Shellcommand - cons.act.shellcommand
 
 This action will execute the provided shell command.  It does not currently allow for running it with admin
 privileges but it is a feature I plan to add.
@@ -294,25 +373,72 @@ Arguments:
 - Command - The command to execute in the shell.
 
 ```lua
-    {mhConstants.category.action, '', 'W', 'Work Agenda', {
-          {mhConstants.bind.shellcommand, "sh -c '/usr/local/bin/emacsclient -c ~/docs/MenuHammer.org'"},
+    {cons.cat.action, '', 'W', 'Work Agenda', {
+          {cons.act.shellcommand, "sh -c '/usr/local/bin/emacsclient -c ~/docs/MenuHammer.org'"},
     }},
 ```
 
-#### Resolution - mhConstants.action.resolution
+#### Openfile - cons.act.openfile
+
+This action will open the provided file in the default application.
+
+Arguments:
+
+- File path - The path to the file to open.
+
+```lua
+    {cons.cat.action, '', 'C', 'Hammerspoon init.lua, {
+          {
+              cons.act.openfile,        -- Action type
+              "~/.hammerspoon/init.lua" -- File path
+          },
+    }},
+```
+
+#### Sleep - cons.act.sleep
+
+This action will pause MenuHammer for the specified amount of time.  This can be used to give applications time
+to prepare for the next action.
+
+Arguments:
+
+- Duration -  The amount of time in nanoseconds to pause.
+
+```lua
+    {cons.cat.action, '', 'C', 'MenuHammer Custom Config', {
+        -- Open the Hammerspoon config file
+        {cons.act.launcher, "Some App"},
+        -- Sleep for a tenth of a second
+        {
+            cons.act.sleep, -- Action type
+            "100000000"     -- Duration
+        },
+        -- Enter some text
+        {cons.act.typetext, 'Some value that needs to wait for the app'},
+    }},
+```
+
+#### Resolution - cons.act.resolution
 
 This action accepts a resolution mode (defined in hs.screen - https://www.hammerspoon.org/docs/hs.screen.html) 
 that will be used to set the resolution of the screen when activated.  By default, MenuHammer includes a
 resolution menu that lists all available resolutions.
 
-#### Mediakey - mhConstants.action.mediakey
+#### Mediakey - cons.act.mediakey
 
-I intend to remove this action entirely.  It can currently perform various media commands (play/pause, next,
-etc.) but it would make more sense to use function actions instead.
+This action will perform a variety of media related commands.  There is a menu defined by default that shows the
+commands available.
 
-##### Openfile - mhConstants.action.openfile
+The commands include:
 
-This action does not currently function as intended.  I'll fill this in later when it does.
+- Next track (iTunes)
+- Previous track (iTunes)
+- Play/Pause (iTunes)
+- Mute/Unmute
+- Volume up
+- Volume down
+- Brightness up
+- Brightness down
 
 ## Screenshots
 
