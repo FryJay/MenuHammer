@@ -68,16 +68,16 @@ function MenuItem:calculateRow(index, numberOfColumns)
     local adjustedIndex = index - 4
 
     -- If the category is navigation, it's index is the row number
-    if self.category == mhConstants.category.navigation
+    if self.category == cons.cat.navigation
     then
         return index
-    elseif self.category == mhConstants.category.back then
+    elseif self.category == cons.cat.back then
         return 0
-    elseif self.category == mhConstants.category.exit then
+    elseif self.category == cons.cat.exit then
         return 3
     end
 
-    returnValue = math.floor(adjustedIndex / (numberOfColumns - 1))
+    local returnValue = math.floor(adjustedIndex / (numberOfColumns - 1))
 
     -- Divide the index number by the number of columns and floor the result.
     return returnValue

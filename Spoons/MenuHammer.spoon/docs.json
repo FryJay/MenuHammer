@@ -15,16 +15,16 @@
     "stripped_doc" : [
 
     ],
+    "type" : "Module",
+    "desc" : "Menuing system inspired by Spacemacs",
     "Deprecated" : [
 
     ],
-    "type" : "Module",
-    "desc" : "Menuing system inspired by Spacemacs",
     "Constructor" : [
 
     ],
     "doc" : "Menuing system inspired by Spacemacs",
-    "items" : [
+    "Method" : [
 
     ],
     "Command" : [
@@ -33,7 +33,7 @@
     "Field" : [
 
     ],
-    "Method" : [
+    "items" : [
 
     ],
     "name" : "MenuHammer"
