@@ -23,16 +23,16 @@
     "Constructor" : [
 
     ],
-    "doc" : "Menuing system inspired by Spacemacs",
+    "Field" : [
+
+    ],
     "Method" : [
 
     ],
     "Command" : [
 
     ],
-    "Field" : [
-
-    ],
+    "doc" : "Menuing system inspired by Spacemacs",
     "items" : [
 
     ],

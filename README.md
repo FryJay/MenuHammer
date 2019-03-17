@@ -14,19 +14,18 @@ Those actions include:
 - Executing a lua function
 - Executing key combinations
 - Typing text into current window
-- Executing a shell script
+- Executing a shell script (with root privileges if needed)
 - Executing a shell command
 - Opening a URL
 - Sleeping (pause) for a specified amount of time
 - Opening files
+- Apply window layouts
 
 It has some default menus configured but you will most certainly want to customize it.  Out of the box it will
 bind Command-Option-Control-q to enable/disable MenuHammer and Option-Space to show/hide MenuHammer.
 
 It is still very much a work in progress.  I have a large list of features I still want to add and some 
 features are only partially implemented.  Use at your own risk.
-
-This project started as a clone of the ModalMgr spoon but has since been nearly entirely rewritten.
 
 I'm new to both Hammerspoon and Lua so any feedback is welcome.
 
@@ -40,7 +39,7 @@ Add these two lines to your init.lua to load the menu when Hammerspoon starts:
 
 ```lua
     menuHammer = hs.loadSpoon("MenuHammer")
-    menuHammer.rootMenu:enter()
+    menuHammer:enter()
 ```
 
 For customizing menus, colors and other values, create a file called menuHammerCustomConfig.lua in 
@@ -67,12 +66,25 @@ Here is an example of a basic menu configuration that covers some of the things 
                       {cons.act.launcher, 'Finder'},
                       {cons.act.keycombo, {'cmd', 'shift'}, 'd'},
                 }},
+                {cons.cat.action, '', 'E', "Split Safari/iTunes", {
+                    {cons.act.func, function()
+                          -- See Hammerspoon layout documentation for more info on this
+                          local mainScreen = hs.screen{x=0,y=0}
+                          hs.layout.apply({
+                                  {"Safari", nil, mainScreen, hs.layout.left50, nil, nil},
+                                  {"iTunes", nil, mainScreen, hs.layout.right50, nil, nil},
+                          })
+                    end }
+                }},
                 {cons.cat.action, '', 'H', "Hammerspoon Manual", {
                       {cons.act.func, function()
                           hs.doc.hsdocs.forceExternalBrowser(true)
                           hs.doc.hsdocs.moduleEntitiesInSidebar(true)
                           hs.doc.hsdocs.help()
                       end }
+                }},
+                {cons.cat.action, ', 'M', 'MenuHammer Default Config', {
+                    {cons.act.openfile, "~/.hammerspoon/Spoons/MenuHammer.spoon/MenuConfigDefaults.lua"},
                 }},
                 {cons.cat.action, '', 'X', "Mute/Unmute", {
                       {cons.act.mediakey, "mute"}
