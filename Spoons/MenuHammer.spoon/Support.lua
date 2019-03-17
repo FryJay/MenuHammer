@@ -15,6 +15,7 @@ end
 
 -- Constants
 cons = readOnlyTable {
+    spoonPath = "~/.hammerspoon/Spoons/MenuHammer.spoon",
     cat = {
         action = 'action',              -- Action category
         submenu = 'submenu',            -- Menu category
@@ -36,6 +37,7 @@ cons = readOnlyTable {
         system = 'system',              -- Execute a system command
         sleep = 'sleep',                -- Pause execution (sleep)
         resolution = 'resolution',      -- Change the screen resolution
+        resizer = 'resizer',            -- Resize the screen
         mediakey = 'mediakey',          -- Execute a media key button
     },
     sys = {
@@ -48,87 +50,41 @@ cons = readOnlyTable {
         switchuser = 'switchuser',      -- Switch user
         screensaver = 'screensaver',    -- Start screensaver
     },
+    resizer = {
+        left = 'left',
+        right = 'right',
+        up = 'up',
+        down = 'down',
+        halfLeft = 'halfleft',
+        halfRight = 'halfright',
+        halfUp = 'halfup',
+        halfDown = 'halfdown',
+        northWest = 'cornerNW',
+        northEast = 'cornerNE',
+        southWest = 'cornerSW',
+        southEast = 'cornerSE',
+        fullScreen = 'fullscreen',
+        centerWindow = 'center_window',
+        stepLeft = 'step_left',
+        stepRight = 'step_right',
+        stepUp = 'step_up',
+        stepDown = 'step_down',
+        expand = 'expand',
+        shrink = 'shrink',
+        screenLeft = 'screen_left',
+        screenRight = 'screen_right',
+        screenUp = 'screen_up',
+        screenDown = 'screen_down',
+        screenNext = 'screen_next',
+        undo = 'undo',
+        redo = 'redo',
+        centerCursor = 'center_cursor'
+    }
 }
 
 ----------------------------------------------------------------------------------------------------
 ------------------------------------ Supporting Functions ------------------------------------------
 ----------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------
--- Encodes text to be used in a URL
-function urlEncode(stringToEncode)
-    if stringToEncode then
-        stringToEncode = stringToEncode:gsub("\n", "\r\n")
-        stringToEncode = stringToEncode:gsub(
-            "([^%w %-%_%.%~])",
-            function(c)
-                return ("%%%02X"):format(string.byte(c))
-            end
-        )
-        stringToEncode = stringToEncode:gsub(" ", "+")
-    end
-    return stringToEncode
-end
-
-----------------------------------------------------------------------------------------------------
--- Replace placeholders in the provided string with values from the stored values.
-function replacePlaceholders(stringToProcess, storedValues, encode)
-
-    local matchPattern = "@@(%a+)@@"
-    local processedString = stringToProcess
-
-    for valueIdentifier in string.gmatch(processedString, matchPattern) do
-
-        print("Found value identifier: " .. valueIdentifier)
-
-        local storedValue = storedValues[valueIdentifier][2]
-
-        if encode then
-            storedValue = urlEncode(storedValue)
-        end
-        assert(storedValue, "No stored value by name " .. valueIdentifier)
-
-        print("Retrieved stored value of " .. storedValue)
-
-        local matchString = "@@" .. valueIdentifier .. "@@"
-
-        processedString = string.gsub(processedString,
-                                      matchString,
-                                      storedValue)
-    end
-
-    return processedString
-end
-
-----------------------------------------------------------------------------------------------------
--- Run all the provided functions.
-function runCommands(commandFunctions)
-    print("Running commands")
-    for index, commandFunction in ipairs(commandFunctions) do
-        commandFunction()
-    end
-end
-
-----------------------------------------------------------------------------------------------------
--- Get confirmation from the user
-function getUserConfirmation(message,
-                                  informativeText)
-
-    print("Getting user confirmation for message: " .. message .. " and text " .. informativeText)
-
-    local buttonPressed = hs.dialog.blockAlert(message,
-                                               informativeText,
-                                               "Ok",
-                                               "Cancel")
-
-    if buttonPressed ~= "Ok" then
-        print("User did not confirm")
-        return false
-    else
-        print("User confirmed")
-        return true
-    end
-end
 
 ----------------------------------------------------------------------------------------------------
 -- Get the length of the table provided.
@@ -176,7 +132,7 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Get resolution menu items for all available resolutions
-function getResolutionMenuItems()
+local function getResolutionMenuItems()
 
     local resolutions = getResolutions()
 
@@ -189,6 +145,7 @@ function getResolutionMenuItems()
 
         local mode = resolutions[modeName]
 
+        -- We've run out of letters so start over at a and use shift as a modifier
         if i == string.byte("z") + 1 then
             i = string.byte("a")
             modifier = 'shift'
@@ -197,7 +154,8 @@ function getResolutionMenuItems()
         table.insert(resolutionMenuItems,
                      {cons.cat.action, modifier, string.char(i), modeName, {
                           {cons.act.resolution, mode}
-        }})
+                     }}
+        )
         i = i + 1
     end
 

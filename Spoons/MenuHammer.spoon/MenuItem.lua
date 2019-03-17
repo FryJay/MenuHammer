@@ -13,7 +13,12 @@ MenuItem.desc = nil
 MenuItem.args = {}
 
 MenuItem.row = nil
-MenuItem.col = nil
+MenuItem.column = nil
+
+MenuItem.xValue = nil
+MenuItem.yValue = nil
+MenuItem.width = nil
+MenuItem.height = nil
 
 MenuItem.textColor = nil
 MenuItem.backgroundColor = nil
@@ -24,14 +29,17 @@ function MenuItem.new(category,
                       modifier,
                       key,
                       desc,
-                      index)
+                      row,
+                      column,
+                      width,
+                      height)
 
+    assert(desc ~= nil, "Description is nil")
     assert(category, "Category name is nil")
-    assert(modifier, "Modifier is nil")
-    assert(key, "Key is nil")
-    assert(desc, "Desc is nil")
-    assert(index, "Index is nil")
-    assert(type(index) == "number", "Index has type " .. type(index))
+    assert(row, desc .. " row is nil")
+    assert(column, desc .. " column is nil")
+    assert(type(row) == "number", desc .. " row has type " .. type(index))
+    assert(type(column) == "number", desc .. " column has type " .. type(index))
 
     local self = setmetatable({}, MenuItem)
 
@@ -39,7 +47,13 @@ function MenuItem.new(category,
     self.modifier = modifier
     self.key = key
     self.desc = desc
-    self.index = index
+    self.row = row
+    self.column = column
+    self.width = tostring(width)
+    self.height = tostring(height)
+
+    self.xValue = tostring(self.column * self.width)
+    self.yValue = tostring(self.height * self.row)
 
     return self
 end
@@ -59,28 +73,46 @@ function MenuItem:displayTitle()
 end
 
 ----------------------------------------------------------------------------------------------------
--- Calculate the row
-function MenuItem:calculateRow(index, numberOfColumns)
+-- Select background canvas
+function MenuItem:getBackgroundCanvas()
+    return
+        {
+            {
+                type = "rectangle",
+                action = "fill",
+                fillColor = {hex = self:backgroundColor(), alpha = 0.95},
+                frame = {
+                    x = self.xValue,
+                    y = self.yValue,
+                    w = self.width,
+                    h = self.height
+                }
+            }
+        }
+end
 
-    assert(index, "Index is nil")
-    assert(numberOfColumns, "Number of columns is nil")
+----------------------------------------------------------------------------------------------------
+-- Select text canvas
+function MenuItem:getTextCanvas()
 
-    local adjustedIndex = index - 4
+    assert(menuItemFont, "Can't get menu item font")
+    assert(menuItemFontSize, "Can't get menu item font size")
+    assert(menuItemTextAlign, "Can't get menu item text align")
 
-    -- If the category is navigation, it's index is the row number
-    if self.category == cons.cat.navigation
-    then
-        return index
-    elseif self.category == cons.cat.back then
-        return 0
-    elseif self.category == cons.cat.exit then
-        return 3
-    end
-
-    local returnValue = math.floor(adjustedIndex / (numberOfColumns - 1))
-
-    -- Divide the index number by the number of columns and floor the result.
-    return returnValue
+    return {
+        type = "text",
+        text = "    " .. self.desc,
+        textFont = menuItemFont,
+        textSize = menuItemFontSize,
+        textColor = {hex = self:textColor(), alpha = 1},
+        textAlignment = menuItemTextAlign,
+        frame = {
+            x = self.xValue,
+            y = self.yValue,
+            w = self.width,
+            h = self.height
+        }
+    }
 end
 
 ----------------------------------------------------------------------------------------------------
