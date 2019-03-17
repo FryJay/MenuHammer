@@ -27,6 +27,8 @@ bind Command-Option-Control-q to enable/disable MenuHammer and Option-Space to s
 It is still very much a work in progress.  I have a large list of features I still want to add and some 
 features are only partially implemented.  Use at your own risk.
 
+I've included the WinWin Spoon from [Awesome Hammerspoon](https://github.com/ashfinal/awesome-hammerspoon) for resizing windows.
+
 I'm new to both Hammerspoon and Lua so any feedback is welcome.
 
 ## Installing
