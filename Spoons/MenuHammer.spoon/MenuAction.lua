@@ -338,7 +338,7 @@ function MenuAction:runShellCommand(shellCommand)
 
             print("Editor exit code: " .. exitCode)
             if exitCode ~= 0 then
-                hs.notify.show("FAILED to open file",
+                hs.notify.show("FAILED to execute shell command",
                                shellCommand .. " not found.  Check the logs.",
                                "")
             end
