@@ -206,7 +206,7 @@ default with this category.
 ### Actions
 
 There are several types of actions that can be performed by menu items.  Each menu item can perform a list of
-actions.  You can use the mhConstant.action table to refer to specific actions.  E.g. cons.act.menu
+actions.  You can use the cons.act table to refer to specific actions.  E.g. cons.act.menu
 to load a menu.
 
 Each action is defined as a table with an action type and a series of other values that are dependent on the
