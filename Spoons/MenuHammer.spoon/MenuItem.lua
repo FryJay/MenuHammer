@@ -117,7 +117,7 @@ function MenuItem:getTextCanvas()
 
     return {
         type = "text",
-        text = "    " .. self.desc,
+        text = "    " .. self:getDisplayValue(),
         textFont = menuItemFont,
         textSize = menuItemFontSize,
         textColor = {hex = self:textColor(), alpha = 1},
@@ -198,6 +198,20 @@ function MenuItem:runAction()
     end
 
     finalFunction()
+end
+
+----------------------------------------------------------------------------------------------------
+-- Get the display value to show
+function MenuItem:getDisplayValue()
+    if self.category ~= cons.cat.display then
+        return self.desc
+    else
+        local displayString = nil
+        for _, command in ipairs(self.commands) do
+            displayString = command()
+        end
+        return displayString
+    end
 end
 
 return MenuItem

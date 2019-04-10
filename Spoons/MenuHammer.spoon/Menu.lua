@@ -162,9 +162,19 @@ function Menu:createMenuItems()
 
         -- Get the key combo and description
         local category = menuItem[1]
-        local modifier = menuItem[2]
-        local key = menuItem[3]
-        local desc = menuItem[4]
+        local modifier = nil
+        local key = nil
+        local desc = nil
+        local commands
+        if category ~= cons.cat.display then
+            modifier = menuItem[2]
+            key = menuItem[3]
+            desc = menuItem[4]
+            commands = menuItem[5]
+        else
+            desc = menuItem[2]
+            commands = menuItem[3]
+        end
 
         -- Validate that the key isn't already bound on this menu
         if key ~= nil then
@@ -178,9 +188,6 @@ function Menu:createMenuItems()
 
         -- Calculate the column number
         local row = adjustedIndex % self.numberOfRows
-
-        -- Get the commands to execute
-        local commands = menuItem[5]
 
         -- Create the menuItem object
         self:createMenuItem(category,

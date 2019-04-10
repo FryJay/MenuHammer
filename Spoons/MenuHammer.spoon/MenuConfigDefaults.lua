@@ -103,6 +103,10 @@ menuItemColors = {
     menuBarIdle = {
         background = "#00ff00",
         text = "#000000"
+    },
+    display = {
+        background = "#000000",
+        text = "#aaaaaa"
     }
 }
 
@@ -124,6 +128,7 @@ menuItemPrefix = {
     navigation = '↩',
     -- navigation = '⎋',
     empty = '',
+    display = '',
 }
 
 -- Menu item separator

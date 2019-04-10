@@ -22,6 +22,7 @@ cons = readOnlyTable {
         back = 'back',                  -- Back button category
         exit = 'exit',                  -- Exit button category
         navigation = 'navigation',      -- Navigation category
+        display = 'display',            -- Display category
     },
     act = {
         menu = 'menu',                  -- Open a menu
