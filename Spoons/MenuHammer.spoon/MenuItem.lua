@@ -106,6 +106,7 @@ function MenuItem:getTextCanvas()
         textSize = menuItemFontSize,
         textColor = {hex = self:textColor(), alpha = 1},
         textAlignment = menuItemTextAlign,
+        textLineBreak = "truncateTail",
         frame = {
             x = self.xValue,
             y = self.yValue,
