@@ -23,6 +23,17 @@ MenuItem.height = nil
 MenuItem.textColor = nil
 MenuItem.backgroundColor = nil
 
+MenuItem.commands = nil
+MenuItem.menuManager = nil
+MenuItem.menu = nil
+
+-- Internal function used to find our location, so we know where to load files from
+local function scriptPath()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    return str:match("(.*/)")
+end
+MenuAction = dofile(scriptPath() .. "/MenuAction.lua")
+
 ----------------------------------------------------------------------------------------------------
 -- Constructor
 function MenuItem.new(category,
@@ -32,14 +43,15 @@ function MenuItem.new(category,
                       row,
                       column,
                       width,
-                      height)
+                      height,
+                      commands,
+                      menuManager,
+                      menu)
 
     assert(desc ~= nil, "Description is nil")
     assert(category, "Category name is nil")
     assert(row, desc .. " row is nil")
     assert(column, desc .. " column is nil")
-    assert(type(row) == "number", desc .. " row has type " .. type(index))
-    assert(type(column) == "number", desc .. " column has type " .. type(index))
 
     local self = setmetatable({}, MenuItem)
 
@@ -54,6 +66,10 @@ function MenuItem.new(category,
 
     self.xValue = tostring(self.column * self.width)
     self.yValue = tostring(self.height * self.row)
+
+    self.commands = commands
+    self.menuManager = menuManager
+    self.menu = menu
 
     return self
 end
@@ -138,6 +154,50 @@ function MenuItem:textColor()
     end
 
     return menuItemColors[self.category].text
+end
+
+----------------------------------------------------------------------------------------------------
+-- Get a function to perform the needed action(s).
+function MenuItem:getActionFunction(desc, command)
+
+    assert(desc, self.desc .. " sent a nil desc")
+
+    local menuAction = MenuAction.new(desc, command, self.menu)
+
+    return menuAction:getActionFunction()
+end
+
+----------------------------------------------------------------------------------------------------
+-- Run menu item action
+function MenuItem:runAction()
+    local commandFunctions = {}
+
+    -- Loop through the commands
+    if self.commands ~= nil then
+      for _, command in ipairs(self.commands) do
+          local menuItemAction = command[1]
+          local subMenuName = command[2]
+
+          -- If the command is to load a menu, ensure the menu exists.
+          if menuItemAction == cons.act.menu then
+              assert(subMenuName, self.desc .. " has nil submenu identifier")
+              assert(self.menuManager:checkMenuExists(subMenuName),
+                    "Menu " .. self.desc .. " has submenu " .. subMenuName .. " which does not exist")
+          end
+          table.insert(commandFunctions, self:getActionFunction(self.desc, command))
+      end
+    end
+
+    local finalFunction = function()
+        for _, commandFunction in ipairs(commandFunctions) do
+            -- If command returns false, don't process any more
+            if not commandFunction() then
+                break
+            end
+        end
+    end
+
+    finalFunction()
 end
 
 return MenuItem

@@ -26,7 +26,6 @@ local function scriptPath()
     return str:match("(.*/)")
 end
 MenuItem = dofile(scriptPath() .. "/MenuItem.lua")
-MenuAction = dofile(scriptPath() .. "/MenuAction.lua")
 
 ----------------------------------------------------------------------------------------------------
 -- Constructor
@@ -183,33 +182,6 @@ function Menu:createMenuItems()
         -- Get the commands to execute
         local commands = menuItem[5]
 
-        local commandFunctions = {}
-
-        -- Loop through the commands
-        if commands ~= nil then
-          for _, command in ipairs(commands) do
-              local menuItemAction = command[1]
-              local subMenuName = command[2]
-
-              -- If the command is to load a menu, ensure the menu exists.
-              if menuItemAction == cons.act.menu then
-                  assert(subMenuName, self.name .. " has nil submenu identifier")
-                  assert(self.menuManager:checkMenuExists(subMenuName),
-                        "Menu " .. self.name .. " has submenu " .. subMenuName .. " which does not exist")
-              end
-              table.insert(commandFunctions, self:getActionFunction(desc, command))
-          end
-        end
-
-        local finalFunction = function()
-            for _, commandFunction in ipairs(commandFunctions) do
-                -- If command returns false, don't process any more
-                if not commandFunction() then
-                    break
-                end
-            end
-        end
-
         -- Create the menuItem object
         self:createMenuItem(category,
                             modifier,
@@ -218,7 +190,7 @@ function Menu:createMenuItems()
                             index,
                             row,
                             column,
-                            finalFunction)
+                            commands)
     end
 end
 
@@ -231,7 +203,7 @@ function Menu:createMenuItem(category,
                              index,
                              row,
                              column,
-                             action)
+                             commands)
 
     local newMenuItem = MenuItem.new(category,
                                      modifier,
@@ -240,14 +212,17 @@ function Menu:createMenuItem(category,
                                      row,
                                      column,
                                      self.entryWidth,
-                                     self.entryHeight)
+                                     self.entryHeight,
+                                     commands,
+                                     self.menuManager,
+                                     self)
 
     assert(newMenuItem, self.name .. " has nil menu item")
 
     -- Add the menu item to the list
     self.menuItems[index] = newMenuItem
 
-    self:bindToMenu(newMenuItem, action)
+    self:bindToMenu(newMenuItem, function() newMenuItem:runAction() end)
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -337,18 +312,6 @@ function Menu:getMenuDisplay()
     end
 
     return newCanvases
-end
-
-----------------------------------------------------------------------------------------------------
--- Get a function to execute to perform the needed action.
-function Menu:getActionFunction(desc, command)
-
-    assert(desc, self.name .. " sent a nil desc")
-
-    local menuAction = MenuAction.new(desc, command, self)
-
-    return menuAction:getActionFunction()
-
 end
 
 return Menu
