@@ -166,11 +166,17 @@ function Menu:createMenuItems()
         local key = nil
         local desc = nil
         local commands
+        -- Default to closing the menu
+        local remainOpen = false
         if category ~= cons.cat.display then
             modifier = menuItem[2]
             key = menuItem[3]
             desc = menuItem[4]
             commands = menuItem[5]
+            -- If remain open is set then use it
+            if menuItem[6] ~= nil then
+                remainOpen = menuItem[6]
+            end
         else
             desc = menuItem[2]
             commands = menuItem[3]
@@ -197,7 +203,8 @@ function Menu:createMenuItems()
                             index,
                             row,
                             column,
-                            commands)
+                            commands,
+                            remainOpen)
     end
 end
 
@@ -210,7 +217,8 @@ function Menu:createMenuItem(category,
                              index,
                              row,
                              column,
-                             commands)
+                             commands,
+                             remainOpen)
 
     local newMenuItem = MenuItem.new(category,
                                      modifier,
@@ -229,13 +237,14 @@ function Menu:createMenuItem(category,
     -- Add the menu item to the list
     self.menuItems[index] = newMenuItem
 
-    self:bindToMenu(newMenuItem, function() newMenuItem:runAction() end)
+    self:bindToMenu(newMenuItem, function() newMenuItem:runAction() end, remainOpen)
 end
 
 ----------------------------------------------------------------------------------------------------
 -- Bind a single item to the menu
 function Menu:bindToMenu(menuItem,
-                         pressedFunction)
+                         pressedFunction,
+                         remainOpen)
 
     if pressedFunction ~= nil then
         assert(type(pressedFunction) == "function",
@@ -245,7 +254,7 @@ function Menu:bindToMenu(menuItem,
     assert(menuItem, "Menu item is nil")
 
     -- Alert the menu manager the item was activated
-    local preprocessFunction = function() self.menuManager:itemActivated(menuItem.category) end
+    local preprocessFunction = function() self.menuManager:itemActivated(menuItem.category, remainOpen) end
 
     local finalFunction = function()
 

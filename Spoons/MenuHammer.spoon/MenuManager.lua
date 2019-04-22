@@ -153,7 +153,7 @@ function MenuManager:createMenu(menuName,
     assert(menuName, "Menu name is nil")
     assert(menuItems, "Menu items is nil for " .. menuName)
 
-    print("Creating menu: " .. menuName)
+    -- print("Creating menu: " .. menuName)
 
     local newMenu = Menu.new(menuName,
                              hs.hotkey.modal.new(),
@@ -288,8 +288,8 @@ end
 
 ----------------------------------------------------------------------------------------------------
 -- Alert MenuHammer an item was selected
-function MenuManager:itemActivated(itemType)
-    if itemType == "action" or itemType == "exit" then
+function MenuManager:itemActivated(itemType, remainOpen)
+    if not remainOpen and (itemType == "action" or itemType == "exit") then
         self:closeMenu()
     end
 end

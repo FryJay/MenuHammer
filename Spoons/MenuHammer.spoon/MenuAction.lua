@@ -50,9 +50,8 @@ function MenuAction:getActionFunction()
             -- Launch an application.
 
             local appIdentifier = command[2]
-            local closeMenu = command[3]
 
-            self:launchApplication(desc, appIdentifier, closeMenu)
+            self:launchApplication(desc, appIdentifier)
             return true
         end,
         [cons.act.func] = function()
