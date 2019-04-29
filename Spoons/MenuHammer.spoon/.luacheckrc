@@ -35,6 +35,7 @@ globals = {
 
     -- Supporting functions
     "tableLength",
+    "resolutionMenuItems",
 }
 
 read_globals = {
