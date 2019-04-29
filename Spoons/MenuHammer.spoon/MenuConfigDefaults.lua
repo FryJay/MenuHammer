@@ -68,23 +68,23 @@ menuItemColors = {
     },
     -- The colors to use for the Exit menu item
     exit = {
-        background = "#222222",
-        text = "#ff0000"
+        background = "#000000",
+        text = "#C1666B"
     },
     -- The colors to use for the Back menu items
     back = {
-        background = "#222222",
-        text = "#00ffff"
+        background = "#000000",
+        text = "#E76F51"
     },
     -- The colors to use for menu menu items
     submenu = {
         background = "#000000",
-        text = "#ee00ee"
+        text = "#9A879D"
     },
     -- The colors to use for navigation menu items
     navigation = {
-        background = "#222222",
-        text = "#2390ff"
+        background = "#000000",
+        text = "#4281A4"
     },
     -- The colors to use for empty menu items
     empty = {
@@ -94,7 +94,7 @@ menuItemColors = {
     -- The colors to use for action menu items
     action = {
         background = "#000000",
-        text = "#2390ff"
+        text = "#7A3B69"
     },
     menuBarActive = {
         background = "#ff0000",
@@ -106,7 +106,7 @@ menuItemColors = {
     },
     display = {
         background = "#000000",
-        text = "#aaaaaa"
+        text = "#48A9A6"
     }
 }
 
