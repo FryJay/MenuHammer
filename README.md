@@ -146,7 +146,7 @@ If no modifiers are required, enter a blank string or nil.
 
 ### Categories
 
-Menu items have a category that are mostly used for display purposes.  The only category that performs an
+Menu items have a category that are mostly used for formatting purposes.  The only category that performs an
 action by default is the "exit" menu item which will always close the open menus.  The category selected 
 will determine what default colors are applied and what symbol is displayed as a prefix.  Typically you 
 will only need to use "submenu" and "action".  You can use the cons.cat table to refer to 
@@ -164,7 +164,7 @@ For example, this menu item will load the Applications menu:
      'A',                                     -- "a" is the hotkey to open the menu
      'Applications',                          -- The description of the menu item to display
      {                                        -- The table of actions to perform
-         {cons.act.menu, "applicationMenu""}  -- Action to open the Application menu
+         {cons.act.menu, "applicationMenu"}  -- Action to open the Application menu
      }
     },
 ```
@@ -182,10 +182,35 @@ For example, this menu item will launch the Terminal application:
      'T',                                    -- "t" is the hokey to activate the action
      "Terminal",                             -- The description of the action
      {                                       -- The table of actions to perform
-         {cons.act.launcher, 'Terminal'}     -- Action to launch the Terminal application.
+         {cons.act.launcher, 'Terminal'}     -- Action to launch the Terminal application
      }
     },
 ```
+
+#### Exit - cons.cat.display
+
+This category is used to display data on the menu.  It will display whatever text is returned from the 
+function it is provided.  
+
+TODO: Currently, the function will block the menu from displaying until it completes
+but this should be fixed in the future.
+
+TODO: The definition for display items requires a table to surround the function but this serves no purpose
+and should be fixed in the future.
+
+For example, this definition will display "Hello" in the menu:
+
+```lua
+    {cons.cat.display,                       -- Category is display
+     'MenuHammer Repo',                      -- A description (not displayed on the UI)
+     {                                       -- A table that I just realized is unnecessary and I might remove.
+         function()                          -- The function to execute to get the display value
+             return "MH: " .. getGitStatus("~/code/MenuHammer", "master")
+         end
+     }
+    },
+```
+
 
 #### Exit - cons.cat.exit 
 
@@ -195,8 +220,7 @@ bound to escape.
 #### Back - cons.cat.back 
 
 Used for "back buttons" to go to the menu set as the parent menu to the current menu.  There a back action 
-defined by default on all menus that is bound to delete.  This category still requires that a "menu" action
-be defined though this should be made automatic in the future.
+defined by default on all menus that is bound to delete.
 
 #### Navigation - cons.cat.navigation
 
@@ -230,6 +254,23 @@ will cause an error.
     }},
 ```
 
+#### Func - cons.act.func
+
+This action will execute the provided function so it can be used to run other HammerSpoon or lua functionality.
+
+Arguments:
+
+- Function - The function to execute when the menu item is activated.
+
+```lua
+    {cons.cat.action, 'shift', 'F', "Force Quit Frontmost App", {
+        {
+            cons.act.func,                                                -- Action type
+            function() hs.application.frontmostApplication():kill9() end  -- Function to execute
+        }
+    }},
+```
+
 #### Launcher - cons.act.launcher
 
 This action launches the application with the matching name.  Note that the name of the application must match
@@ -248,29 +289,12 @@ Arguments:
     }},
 ```
 
-#### Func - cons.act.func
-
-This action will execute the provided function so it can be used to run other HammerSpoon or lua functionality.
-
-Arguments:
-
-- Function - The function to execute when the menu item is activated.
-
-```lua
-    {cons.cat.action, 'shift', 'F', "Force Quit Frontmost App", {
-        {
-            cons.act.func,                                                -- Action type
-            function() hs.application.frontmostApplication():kill9() end  -- Function to execute
-        }
-    }},
-```
-
 #### User Input - cons.act.userinput
 
 This action will display a popup to the user asking them to provide input.   It will store the value in a table
 called "storedValues" that is owned by the MenuHammer object.  The values can be referenecd in future actions
 and can be replaced in text using placeholders formatted as "@@valueIdentifier@@".  Text replacement is only
-currently implemented on the openurl action.
+currently implemented on the openurl and texttype actions.
 
 Arguments:
 
@@ -326,11 +350,11 @@ Arguments:
 
 ```lua
     {cons.cat.action, 'shift', 'H', 'Hammerspoon Folder', {
-        -- Switch to Finder
+        -- Switch to Finder with a launcher action
         {cons.act.launcher, 'Finder'},
-        -- Open folder location entry
+        -- Open "Go to a folder" with a keycombo action
         {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-        -- Enter the text
+        -- Enter the text with a typetext action
         {
             cons.act.typetext,  -- Action type
             '~/.hammerspoon\n'  -- Text to type
@@ -348,34 +372,36 @@ Arguments:
 - URL to open - The URL to open in the default browser.
 
 ```lua
-    {cons.cat.action, '', 'W', 'Wikipedia',
-     {
-         {cons.act.userinput,
-          "luckyWikipedia", 
-          "Lucky Wikipedia",
-          "Google a Wikipedia article and hit I'm Feeling Lucky button"}, 
-         {
-             -- Action type
-             cons.act.openurl,
-             -- URL to open
-             "http://www.google.com/search?q=@@luckyWikipedia@@%20site:wikipedia.org&meta=&btnI"
-         }
+    {cons.cat.action, '', 'W', 'Wikipedia', {
+        {cons.act.userinput,
+         "luckyWikipedia", 
+         "Lucky Wikipedia",
+         "Google a Wikipedia article and hit I'm Feeling Lucky button"}, 
+        {
+            -- Action type
+            cons.act.openurl,
+            -- URL to open
+            "http://www.google.com/search?q=@@luckyWikipedia@@%20site:wikipedia.org&meta=&btnI"
+        }
     }},
 ```
 
 #### Script - cons.act.script
 
-This action will execute the provided shell script.
+This action will execute the provided shell script.  Scripts are currently run without any environment 
 
 Arguments:
 
 - Script path - The path to the script.  I haven't tested relative paths but absolute paths and ~/ work.
 - Use admin - A flag to indicate whether the script should be run with admin privileges.  Requires ssh_askpass. 
-This option currently does not work and will result in an error.
 
 ```lua
     {cons.cat.action, '', 'S', 'Run this script', {
-        {cons.act.script, "~/scripts/some_script.sh"},
+        {
+            -- Action type
+            cons.act.script, 
+            -- Location of the script to run
+            "~/scripts/some_script.sh"},
     }},
 ```
 
