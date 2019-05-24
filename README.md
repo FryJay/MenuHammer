@@ -85,7 +85,7 @@ Here is an example of a basic menu configuration that covers some of the things 
                           hs.doc.hsdocs.help()
                       end }
                 }},
-                {cons.cat.action, ', 'M', 'MenuHammer Default Config', {
+                {cons.cat.action, '', 'M', 'MenuHammer Default Config', {
                     {cons.act.openfile, "~/.hammerspoon/Spoons/MenuHammer.spoon/MenuConfigDefaults.lua"},
                 }},
                 {cons.cat.action, '', 'X', "Mute/Unmute", {
