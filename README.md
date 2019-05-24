@@ -453,7 +453,7 @@ Arguments:
         -- Sleep for a tenth of a second
         {
             cons.act.sleep, -- Action type
-            "100000000"     -- Duration
+            "100000"     -- Duration
         },
         -- Enter some text
         {cons.act.typetext, 'Some value that needs to wait for the app'},
