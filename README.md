@@ -58,7 +58,7 @@ Here is an example of a basic menu configuration that covers some of the things 
             parentMenu = nil,
             menuHotkey = {{'alt'}, 'space'},
             menuItems =  {
-                {cons.cat.menu, '', 'A', 'Applications', {
+                {cons.cat.submenu, '', 'A', 'Applications', {
                       {cons.act.menu, "applicationMenu"}
                 }},
                 {cons.cat.action, '', 'T', "Terminal", {
