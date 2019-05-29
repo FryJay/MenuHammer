@@ -27,7 +27,6 @@ MenuManager.showMenuBarItems = false
 -- The menu bar item
 MenuManager.menuBarItem = nil
 
-print("nilling canvas")
 MenuManager.canvas = nil
 MenuManager.activeMenu = nil
 
@@ -42,7 +41,7 @@ MenuManager.spoonPath = hs.spoons.scriptPath()
 Menu = dofile(MenuManager.spoonPath .. "/Menu.lua")
 
 -- Import support methods
-MenuSupport = dofile(MenuManager.spoonPath.."/Support.lua")
+dofile(MenuManager.spoonPath.."/Support.lua")
 
 ----------------------------------------------------------------------------------------------------
 --------------------------------------- MenuManager Init -------------------------------------------

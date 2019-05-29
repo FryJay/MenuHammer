@@ -164,7 +164,7 @@ function Menu:createMenuItems()
         local category = menuItem[1]
         local modifier = nil
         local key = nil
-        local desc = nil
+        local desc
         local commands
         -- Default to closing the menu
         local remainOpen = false
