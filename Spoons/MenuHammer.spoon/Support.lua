@@ -148,6 +148,10 @@ local function getResolutionMenuItems()
 
         -- We've run out of letters so start over at a and use shift as a modifier
         if i == string.byte("z") + 1 then
+            -- We've run out of those too, so give up
+            if modifier == 'shift' then
+                break
+            end
             i = string.byte("a")
             modifier = 'shift'
         end
