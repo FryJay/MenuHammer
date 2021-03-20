@@ -360,6 +360,14 @@ function MenuAction:openFile(filePath)
 
     assert(filePath, "No file path provided")
 
+    local firstChar = filePath:sub(1, 1)
+    
+    if firstChar == "~" then
+        local homePath = os.getenv("HOME")
+        local filePathWithoutTilde = filePath:sub(2)
+        filePath = homePath .. filePathWithoutTilde
+    end
+
     local quotedFilePath = '\\"' .. filePath .. '\\"'
 
     local commandString = '"sh -c \'open ' .. quotedFilePath .. '\'"'
