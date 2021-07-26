@@ -172,9 +172,11 @@ For example, this menu item will load the Applications menu:
 #### Action - cons.cat.action
 
 This category is used when the menu item performs one or more actions.  MenuHammer closes when actions are 
-performed.  MenuHammer will close the open menu when an action is performed.
+performed.  MenuHammer will close the open menu when an action is performed, unless you specify `true` as
+the last argument.
 
-For example, this menu item will launch the Terminal application:
+For example, this menu item will launch the Terminal application, closing the menu immediately when the
+terminal is launched:
 
 ```lua
     {cons.cat.action,                        -- Category is action 
@@ -184,6 +186,15 @@ For example, this menu item will launch the Terminal application:
      {                                       -- The table of actions to perform
          {cons.act.launcher, 'Terminal'}     -- Action to launch the Terminal application
      }
+    },
+```
+
+And this one will increase the volume, without closing the menu:
+
+```lua
+    {cons.cat.action, '', 'K', "Volume Up 10%", {
+         {cons.act.mediakey, "adjustVolume", 10}},
+         true,
     },
 ```
 
