@@ -501,7 +501,7 @@ menuHammerMenuList = {
     -- Games Menu
     ------------------------------------------------------------------------------------------------
     [gamesMenu] = {
-        parentMenu = applicationMenu,
+        parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
             {cons.cat.action, '', 'G', "GOG Galaxy", {

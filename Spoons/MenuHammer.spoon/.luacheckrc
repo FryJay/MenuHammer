@@ -1,51 +1,54 @@
-unused_args = false
-allow_defined_top = true
+std = {
+    unused_args = false,
+    allow_defined_top = true,
 
-globals = {
-    -- Hammerspoon
-    "hs",
-    "spoon",
+    globals = {
+        -- Hammerspoon
+        "hs",
+        "spoon",
 
-    "menuHammer",
+        "menuHammer",
 
-    -- General config
-    "menuShowInFullscreen",
-    "showMenuBarItem",
-    "menuTextEditor",
-    "askpassLocation",
+        -- General config
+        "menuShowInFullscreen",
+        "showMenuBarItem",
+        "menuTextEditor",
+        "askpassLocation",
 
-    -- Menu config
-    "menuHammerToggleKey",
-    "menuHammerMenuList",
+        -- Menu config
+        "menuHammerToggleKey",
+        "menuHammerMenuList",
 
-    -- Menu options
-    "menuNumberOfColumns",
-    "menuMinNumberOfRows",
-    "menuRowHeight",
-    "menuOuterPadding",
+        -- Menu options
+        "menuNumberOfColumns",
+        "menuMinNumberOfRows",
+        "menuRowHeight",
+        "menuOuterPadding",
 
-    -- Font options
-    "menuItemFont",
-    "menuItemFontSize",
-    "menuItemTextAlign",
+        -- Font options
+        "menuItemFont",
+        "menuItemFontSize",
+        "menuItemTextAlign",
 
-    "menuItemPrefix",
-    "menuItemColors",
-    "cons",
+        "menuItemPrefix",
+        "menuItemColors",
+        "cons",
 
-    -- Supporting functions
-    "tableLength",
-    "resolutionMenuItems",
-}
+        -- Supporting functions
+        "printTable",
+        "tableLength",
+        "resolutionMenuItems",
+    },
 
-read_globals = {
-    string = {fields = {"split"}},
-    table = {fields = {"copy", "getn"}},
+    read_globals = {
+        string = {fields = {"split"}},
+        table = {fields = {"copy", "getn"}},
 
-    -- Builtin
-    "vector", "ItemStack",
-    "dump", "DIR_DELIM", "VoxelArea", "Settings",
+        -- Builtin
+        "vector", "ItemStack",
+        "dump", "DIR_DELIM", "VoxelArea", "Settings",
 
-    -- MTG
-    "default", "sfinv", "creative",
+        -- MTG
+        "default", "sfinv", "creative",
+    }
 }

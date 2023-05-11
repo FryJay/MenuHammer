@@ -1,15 +1,14 @@
-
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------- Constants ------------------------------------------------
 ----------------------------------------------------------------------------------------------------
 
-function readOnlyTable(table)
+local function readOnlyTable(table)
     return setmetatable({}, {
-            __index = table,
-            __newindex = function(table, key, value)
-                error('Attempt to modify read-only table')
-            end,
-            __metatable = false
+        __index = table,
+        __newindex = function(table, key, value)
+            error('Attempt to modify read-only table')
+        end,
+        __metatable = false
     });
 end
 
@@ -17,39 +16,39 @@ end
 cons = readOnlyTable {
     spoonPath = "~/.hammerspoon/Spoons/MenuHammer.spoon",
     cat = {
-        action = 'action',              -- Action category
-        submenu = 'submenu',            -- Menu category
-        back = 'back',                  -- Back button category
-        exit = 'exit',                  -- Exit button category
-        navigation = 'navigation',      -- Navigation category
-        display = 'display',            -- Display category
+        action = 'action',         -- Action category
+        submenu = 'submenu',       -- Menu category
+        back = 'back',             -- Back button category
+        exit = 'exit',             -- Exit button category
+        navigation = 'navigation', -- Navigation category
+        display = 'display',       -- Display category
     },
     act = {
-        menu = 'menu',                  -- Open a menu
-        launcher = 'launcher',          -- Launch an application
-        func = 'function',              -- Execute a function
-        userinput = 'userinput',        -- Get user input
-        keycombo = 'keycombo',          -- Execute a key combination
-        typetext = 'typetext',          -- Type some text into current window
-        openurl = 'openurl',            -- Open a URL
-        script = 'script',              -- Execute a shell script
-        shellcommand = 'shellCommand',  -- Execute a shell command
-        openfile = 'openfile',          -- Open a file
-        system = 'system',              -- Execute a system command
-        sleep = 'sleep',                -- Pause execution (sleep)
-        resolution = 'resolution',      -- Change the screen resolution
-        resizer = 'resizer',            -- Resize the screen
-        mediakey = 'mediakey',          -- Execute a media key button
+        menu = 'menu',                 -- Open a menu
+        launcher = 'launcher',         -- Launch an application
+        func = 'function',             -- Execute a function
+        userinput = 'userinput',       -- Get user input
+        keycombo = 'keycombo',         -- Execute a key combination
+        typetext = 'typetext',         -- Type some text into current window
+        openurl = 'openurl',           -- Open a URL
+        script = 'script',             -- Execute a shell script
+        shellcommand = 'shellCommand', -- Execute a shell command
+        openfile = 'openfile',         -- Open a file
+        system = 'system',             -- Execute a system command
+        sleep = 'sleep',               -- Pause execution (sleep)
+        resolution = 'resolution',     -- Change the screen resolution
+        resizer = 'resizer',           -- Resize the screen
+        mediakey = 'mediakey',         -- Execute a media key button
     },
     sys = {
-        shutdown = 'shutdown',          -- Shutdown the system
-        restart = 'restart',            -- Restart the system
-        logout = 'logout',              -- Logout with confirmation
-        logoutnow = 'logoutnow',        -- Logout without confirmation
-        forcequit = 'forcequit',        -- Force quit frontmost application
-        lockscreen = 'lockscreen',      -- Lock the screen (really puts to sleep)
-        switchuser = 'switchuser',      -- Switch user
-        screensaver = 'screensaver',    -- Start screensaver
+        shutdown = 'shutdown',       -- Shutdown the system
+        restart = 'restart',         -- Restart the system
+        logout = 'logout',           -- Logout with confirmation
+        logoutnow = 'logoutnow',     -- Logout without confirmation
+        forcequit = 'forcequit',     -- Force quit frontmost application
+        lockscreen = 'lockscreen',   -- Lock the screen (really puts to sleep)
+        switchuser = 'switchuser',   -- Switch user
+        screensaver = 'screensaver', -- Start screensaver
     },
     resizer = {
         left = 'left',
@@ -88,6 +87,23 @@ cons = readOnlyTable {
 ----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
+-- Print an entire table
+function printTable(tbl, indent)
+    if not indent then indent = 0 end
+    for k, v in pairs(tbl) do
+        local formatting = string.rep("  ", indent) .. k .. ": "
+        if type(v) == "table" then
+            print(formatting)
+            printTable(v, indent + 1)
+        elseif type(v) == 'boolean' then
+            print(formatting .. tostring(v))
+        else
+            print(formatting .. v)
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------------------
 -- Get the length of the table provided.
 function tableLength(inputTable)
     local count = 0
@@ -98,7 +114,6 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Create the resolution list.
 local function getResolutions()
-
     local primary = hs.screen.primaryScreen()
     local modes = primary:availableModes()
 
@@ -108,13 +123,11 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Get a list of sorted resolution names
 local function getSortedResolutionKeys(resolutions)
-
     local function sortResolutions(resolutionA, resolutionB)
-
         local prefixA = tonumber(string.sub(resolutionA, 1,
-                                            string.find(resolutionA, "x")-1))
+            string.find(resolutionA, "x") - 1))
         local prefixB = tonumber(string.sub(resolutionB, 1,
-                                            string.find(resolutionB, "x")-1))
+            string.find(resolutionB, "x") - 1))
         return prefixA > prefixB
     end
 
@@ -134,7 +147,6 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Get resolution menu items for all available resolutions
 local function getResolutionMenuItems()
-
     local resolutions = getResolutions()
 
     local i = string.byte("a")
@@ -143,9 +155,7 @@ local function getResolutionMenuItems()
     local resolutionMenuItems = {}
 
     for _, modeName in pairs(getSortedResolutionKeys(resolutions)) do
-
         local mode = resolutions[modeName]
-
         -- We've run out of letters so start over at a and use shift as a modifier
         if i == string.byte("z") + 1 then
             -- We've run out of those too, so give up
@@ -157,14 +167,16 @@ local function getResolutionMenuItems()
         end
 
         table.insert(resolutionMenuItems,
-                     {cons.cat.action, modifier, string.char(i), modeName, {
-                          {cons.act.resolution, mode}
-                     }}
+            { cons.cat.action, modifier, string.char(i), modeName, {
+                { cons.act.resolution, mode }
+            } }
         )
         i = i + 1
     end
 
+    -- printTable(resolutionMenuItems)
+
     return resolutionMenuItems
 end
 
-resolutionMenuItems = getResolutionMenuItems(getResolutions())
+resolutionMenuItems = getResolutionMenuItems()

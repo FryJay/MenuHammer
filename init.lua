@@ -1,5 +1,5 @@
 -- Load MenuHammer
-menuHammer = hs.loadSpoon("MenuHammer")
+local menuHammer = hs.loadSpoon("MenuHammer")
 
 -- Activate the root menu
 menuHammer:enter()

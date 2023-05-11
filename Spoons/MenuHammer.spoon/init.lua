@@ -20,7 +20,7 @@ mh.license = "MIT - https://opensource.org/licenses/MIT"
 mh.spoonPath = hs.spoons.scriptPath()
 
 -- Setup the menu manager
-MenuManager = dofile(mh.spoonPath.."/MenuManager.lua")
+MenuManager = dofile(mh.spoonPath .. "/MenuManager.lua")
 
 mh.menuManager = nil
 
@@ -29,7 +29,7 @@ mh.menuManager = nil
 ----------------------------------------------------------------------------------------------------
 
 -- Load the defaults
-dofile(mh.spoonPath.."/MenuConfigDefaults.lua")
+dofile(mh.spoonPath .. "/MenuConfigDefaults.lua")
 
 -- Load the custom config
 menuCustomConfig = hs.fs.pathToAbsolute(hs.configdir .. '/menuHammerCustomConfig.lua')
@@ -64,7 +64,6 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function mh:init()
-
     print("MenuHammer initializing")
 
     assert(menuHammerToggleKey, "No toggle key set")
@@ -73,16 +72,15 @@ function mh:init()
     assert(menuItemPrefix, "No menu item prefixes defined.")
 
     mh.menuManager = MenuManager.new(menuHammerToggleKey,
-                                     menuHammerMenuList,
-                                     menuItemColors,
-                                     menuItemPrefix,
-                                     showMenuBarItem)
+        menuHammerMenuList,
+        menuItemColors,
+        menuItemPrefix,
+        showMenuBarItem)
 
     assert(mh.menuManager, "Menu manager is nil")
 end
 
 function mh:enter()
-
     print("MenuHammer is activating")
 
     mh.menuManager:enter()
