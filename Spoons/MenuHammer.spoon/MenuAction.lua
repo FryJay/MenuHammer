@@ -10,18 +10,15 @@ MenuAction.command = nil
 MenuAction.parentMenu = nil
 MenuAction.storedValues = nil
 
--- Internal function used to find our location, so we know where to load files from
-local function scriptPath()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
-end
+MenuAction.spoonPath = hs.spoons.scriptPath()
 
-MediaActions = dofile(scriptPath() .. "/actions/MediaActions.lua")
-ResizerActions = dofile(scriptPath() .. "/actions/ResizerActions.lua")
-SystemActions = dofile(scriptPath() .. "/actions/SystemActions.lua")
-UserActions = dofile(scriptPath() .. "/actions/UserActions.lua")
-NetActions = dofile(scriptPath() .. "/actions/NetActions.lua")
-TextActions = dofile(scriptPath() .. "/actions/TextActions.lua")
+-- Import the Menu class
+MediaActions = dofile(MenuAction.spoonPath .. "/actions/MediaActions.lua")
+ResizerActions = dofile(MenuAction.spoonPath .. "/actions/ResizerActions.lua")
+SystemActions = dofile(MenuAction.spoonPath .. "/actions/SystemActions.lua")
+UserActions = dofile(MenuAction.spoonPath .. "/actions/UserActions.lua")
+NetActions = dofile(MenuAction.spoonPath .. "/actions/NetActions.lua")
+TextActions = dofile(MenuAction.spoonPath .. "/actions/TextActions.lua")
 
 ----------------------------------------------------------------------------------------------------
 -- Constructor

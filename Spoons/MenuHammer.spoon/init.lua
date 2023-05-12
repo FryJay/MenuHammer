@@ -22,6 +22,9 @@ mh.spoonPath = hs.spoons.scriptPath()
 -- Setup the menu manager
 MenuManager = dofile(mh.spoonPath .. "/MenuManager.lua")
 
+-- Import support methods
+dofile(hs.spoons.scriptPath() .. "/Support.lua")
+
 mh.menuManager = nil
 
 ----------------------------------------------------------------------------------------------------
@@ -71,11 +74,7 @@ function mh:init()
     assert(menuItemColors, "No menu item colors defined.")
     assert(menuItemPrefix, "No menu item prefixes defined.")
 
-    mh.menuManager = MenuManager.new(menuHammerToggleKey,
-        menuHammerMenuList,
-        menuItemColors,
-        menuItemPrefix,
-        showMenuBarItem)
+    mh.menuManager = MenuManager.new()
 
     assert(mh.menuManager, "Menu manager is nil")
 end

@@ -1,10 +1,4 @@
--- Internal function used to find our location, so we know where to load files from
-local function scriptPath()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
-end
-
-BaseAction = dofile(scriptPath() .. "/BaseAction.lua")
+BaseAction = dofile(hs.spoons.scriptPath() .. "/BaseAction.lua")
 
 ----------------------------------------------------------------------------------------------------
 ---------------------------------- Resizer Action Definition ---------------------------------------
