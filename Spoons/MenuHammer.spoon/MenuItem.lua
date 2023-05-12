@@ -1,4 +1,3 @@
-
 ----------------------------------------------------------------------------------------------------
 ------------------------------------ Menu Item Definition ------------------------------------------
 ----------------------------------------------------------------------------------------------------
@@ -10,29 +9,15 @@ MenuItem.category = nil
 MenuItem.modifier = {}
 MenuItem.key = nil
 MenuItem.desc = nil
-MenuItem.args = {}
-
-MenuItem.row = nil
-MenuItem.column = nil
-
-MenuItem.xValue = nil
-MenuItem.yValue = nil
-MenuItem.width = nil
-MenuItem.height = nil
-
-MenuItem.textColor = nil
-MenuItem.backgroundColor = nil
+MenuItem.prefix = nil
 
 MenuItem.commands = nil
 MenuItem.menuManager = nil
 MenuItem.menu = nil
+MenuItem.canvas = nil
 
--- Internal function used to find our location, so we know where to load files from
-local function scriptPath()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
-end
-MenuAction = dofile(scriptPath() .. "/MenuAction.lua")
+MenuAction = dofile(hs.spoons.scriptPath() .. "/MenuAction.lua")
+MenuItemCanvas = dofile(hs.spoons.scriptPath() .. "/MenuItemCanvas.lua")
 
 ----------------------------------------------------------------------------------------------------
 -- Constructor
@@ -59,101 +44,28 @@ function MenuItem.new(category,
     self.modifier = modifier
     self.key = key
     self.desc = desc
-    self.row = row
-    self.column = column
-    self.width = tostring(width)
-    self.height = tostring(height)
-
-    self.xValue = tostring(self.column * self.width)
-    self.yValue = tostring(self.height * self.row)
 
     self.commands = commands
     self.menuManager = menuManager
     self.menu = menu
 
+    self.prefix = menuItemPrefix[self.category]
+    assert(self.prefix ~= nil, "No prefix found for " .. self.desc .. " with category " .. self.category)
+
+    self.canvas = MenuItemCanvas.new(
+        row,
+        column,
+        width,
+        height,
+        category)
     return self
 end
 
-function MenuItem:prefix()
-
-    local prefix = menuItemPrefix[self.category]
-
-    assert(prefix ~= nil, "No prefix found for " .. self.desc .. " with category " .. self.category)
-
-    return prefix
-end
-
-function MenuItem:displayTitle()
-
-    return self:prefix() .. " " .. self.desc
-end
-
 ----------------------------------------------------------------------------------------------------
--- Select background canvas
-function MenuItem:getBackgroundCanvas()
-    return
-        {
-            {
-                type = "rectangle",
-                action = "fill",
-                fillColor = {hex = self:backgroundColor(), alpha = 0.95},
-                frame = {
-                    x = self.xValue,
-                    y = self.yValue,
-                    w = self.width,
-                    h = self.height
-                }
-            }
-        }
-end
-
-----------------------------------------------------------------------------------------------------
--- Select text canvas
-function MenuItem:getTextCanvas()
-
-    assert(menuItemFont, "Can't get menu item font")
-    assert(menuItemFontSize, "Can't get menu item font size")
-    assert(menuItemTextAlign, "Can't get menu item text align")
-
-    return {
-        type = "text",
-        text = "    " .. self:getDisplayValue(),
-        textFont = menuItemFont,
-        textSize = menuItemFontSize,
-        textColor = {hex = self:textColor(), alpha = 1},
-        textAlignment = menuItemTextAlign,
-        textLineBreak = "clip",
-        frame = {
-            x = self.xValue,
-            y = self.yValue,
-            w = self.width,
-            h = self.height
-        }
-    }
-end
-
-----------------------------------------------------------------------------------------------------
--- Select menu item background color
-function MenuItem:backgroundColor()
-
-    if self.category == nil then
-        print("Received nil item category.  Defaulting background color.")
-        return menuItemColors.default.background
-    end
-
-    return menuItemColors[self.category].background
-end
-
-----------------------------------------------------------------------------------------------------
--- Select menu item color
-function MenuItem:textColor()
-
-    if self.category == nil then
-        print("Received nil item category.  Defaulting text color.")
-        return menuItemColors.default.text
-    end
-
-    return menuItemColors[self.category].text
+-- Get the menu item's canvas
+function MenuItem:getCanvas()
+    self.canvas:setDisplayValue(self:getDisplayValue())
+    return self.canvas
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -198,6 +110,12 @@ function MenuItem:runAction()
     end
 
     finalFunction()
+end
+
+----------------------------------------------------------------------------------------------------
+-- Get the title for the menu item
+function MenuItem:displayTitle()
+    return self.prefix .. " " .. self.desc
 end
 
 ----------------------------------------------------------------------------------------------------

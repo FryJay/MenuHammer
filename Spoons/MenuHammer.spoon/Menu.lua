@@ -20,12 +20,7 @@ Menu.windowHeight = nil
 Menu.entryWidth = nil
 Menu.entryHeight = nil
 
--- Internal function used to find our location, so we know where to load files from
-local function scriptPath()
-    local str = debug.getinfo(2, "S").source:sub(2)
-    return str:match("(.*/)")
-end
-MenuItem = dofile(scriptPath() .. "/MenuItem.lua")
+MenuItem = dofile(hs.spoons.scriptPath()  .. "/MenuItem.lua")
 
 ----------------------------------------------------------------------------------------------------
 -- Constructor
@@ -277,57 +272,6 @@ function Menu:bindToMenu(menuItem,
         menuItem.desc = newModalBind.keys[tableLength(newModalBind.keys)].msg
     end
 
-end
-
-----------------------------------------------------------------------------------------------------
------------------------------------ Drawing Functions ----------------------------------------------
-----------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------
--- Get the frame to put the menu in
-function Menu:getMenuFrame()
-
-    local windowHeight = self.windowHeight
-
-    -- Calculate the dimensions using the size of the main screen.
-    local cscreen = hs.screen.mainScreen()
-    local cres = cscreen:frame()
-    local menuFrame = {
-        x = cres.x,
-        y = cres.y + (cres.h - windowHeight),
-        w = cres.w,
-        h = windowHeight
-    }
-
-    return menuFrame
-end
-
-----------------------------------------------------------------------------------------------------
--- Return the canvases to display
-function Menu:getMenuDisplay()
-
-    assert(self.menuItems, "Menu " .. self.name .. " has no menu items defined")
-
-    local newCanvases = {}
-
-    -- Loop through each menu item and build them
-    for _, menuItem in pairs(self.menuItems) do
-
-        -- Create the background canvas
-        local menuItemCanvases = menuItem:getBackgroundCanvas()
-
-        -- Create the text canvas, if necessary
-        if menuItem.desc ~= nil then
-            table.insert(menuItemCanvases,
-                         menuItem:getTextCanvas()
-            )
-        end
-
-        -- Append the new canvases
-        for _, newCanvas in pairs(menuItemCanvases) do table.insert(newCanvases, newCanvas) end
-    end
-
-    return newCanvases
 end
 
 return Menu
