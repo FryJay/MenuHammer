@@ -33,9 +33,12 @@ MenuManager.activeMenu = nil
 MenuManager.menuItems = {}
 MenuManager.storedValues = {}
 
+MenuManager.showMenuDelay = 0.0
 MenuManager.rootMenu = nil
 
 MenuManager.spoonPath = hs.spoons.scriptPath()
+
+MenuManager.menuCallback = nil
 
 -- Import the Menu class
 Menu = dofile(MenuManager.spoonPath .. "/Menu.lua")
@@ -224,7 +227,10 @@ end
 ----------------------------------------------------------------------------------------------------
 -- Close menus
 function MenuManager:closeMenu()
-
+    if MenuManager.menuCallback then
+         MenuManager.menuCallback:stop()
+         MenuManager.menuCallback  = nil
+    end
     print("Closing menus")
     -- Shut off the active menu
     if self.activeMenu ~= nil then
@@ -276,7 +282,14 @@ function MenuManager:openMenu(menuName)
     end
 
     -- Show the menu
-    self.canvas:show()
+    if MenuManager.showMenuDelay > 0 then
+      -- this should never be called when a callback is active...
+      assert(MenuManager.menuCallback == nil)
+      MenuManager.menuCallback = hs.timer.doAfter(MenuManager.showMenuDelay,
+        function () self.canvas:show() end)
+    else
+        self.canvas:show()
+    end
 end
 
 ----------------------------------------------------------------------------------------------------
