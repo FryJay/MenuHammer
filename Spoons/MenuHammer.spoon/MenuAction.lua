@@ -209,6 +209,7 @@ function MenuAction:getUserInput(valueIdentifier, messageValue, informativeText,
     if default == nil then
         default = ""
     end
+    local cwin = hs.window.focusedWindow()
 
     hs.focus()
 
@@ -219,6 +220,10 @@ function MenuAction:getUserInput(valueIdentifier, messageValue, informativeText,
                                                         "Cancel")
 
     self.parentMenu.menuManager.storedValues[valueIdentifier] = {buttonValue, textValue}
+
+    if cwin then
+      cwin:focus()
+    end
 
     if buttonValue == "Cancel" then
         return false
